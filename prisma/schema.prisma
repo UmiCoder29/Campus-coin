@@ -1,0 +1,352 @@
+// Campus Coin - PostgreSQL Database Schema
+// Optimized for Neon Serverless PostgreSQL with Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------
+// ENUMS
+// ----------------------------------------------------
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum PaymentMethod {
+  CASH
+  DEBIT_CARD
+  CREDIT_CARD
+  CAMPUS_CARD
+  DIGITAL_WALLET
+  BANK_TRANSFER
+}
+
+enum BudgetPeriod {
+  WEEKLY
+  MONTHLY
+  SEMESTER
+}
+
+enum InsightType {
+  SPENDING_SURGE
+  SAVING_OPPORTUNITY
+  BUDGET_PACING
+  ANOMALY_DETECTED
+  MILESTONE_ACHIEVED
+}
+
+enum InsightSeverity {
+  INFO
+  WARNING
+  SUCCESS
+  CRITICAL
+}
+
+enum TipCategory {
+  FOOD_DINING
+  TEXTBOOKS_ACADEMICS
+  HOUSING_LIVING
+  ENTERTAINMENT
+  STUDENT_DISCOUNTS
+  CAMPUS_HACKS
+}
+
+enum TipDifficulty {
+  EASY
+  MODERATE
+  CHALLENGING
+}
+
+enum NotificationType {
+  BUDGET_WARNING
+  BUDGET_EXCEEDED
+  INSIGHT_READY
+  AI_INSIGHT
+  UNUSUAL_TRANSACTION
+  RECURRING_BILL
+  SYSTEM
+}
+
+// ----------------------------------------------------
+// MODELS
+// ----------------------------------------------------
+
+model User {
+  id                    String         @id @default(cuid())
+  email                 String         @unique
+  passwordHash          String         @map("password_hash")
+  name                  String
+  role                  Role           @default(STUDENT)
+  status                String         @default("ACTIVE")
+  academicYear          String?        @map("academic_year")
+  monthlyAllowance      Decimal?       @map("monthly_allowance") @db.Decimal(12, 2)
+  savingsGoal           Decimal?       @map("savings_goal") @db.Decimal(12, 2)
+  image                 String?
+  studentId             String?        @map("student_id")
+  university            String?
+  currency              String         @default("USD")
+  theme                 String         @default("SYSTEM")
+  monthlyIncomeEstimate Decimal?       @map("monthly_income_estimate") @db.Decimal(12, 2)
+  budgetAlertThreshold  Int            @default(80) @map("budget_alert_threshold")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+
+  transactions          Transaction[]
+  categories            Category[]
+  budgets               Budget[]
+  insights              Insight[]
+  savingTips            SavingTip[]
+  notifications         Notification[]
+  savedTips             UserSavedTip[]
+  activityLogs          ActivityLog[]
+
+  @@index([email])
+  @@index([status])
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  email     String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("password_reset_tokens")
+}
+
+model Category {
+  id        String       @id @default(cuid())
+  name      String
+  type      CategoryType
+  icon      String       @default("Tag")
+  color     String       @default("#6366F1")
+  isDefault Boolean      @default(false) @map("is_default")
+  userId    String?      @map("user_id")
+  user      User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@unique([userId, name, type])
+  @@index([userId])
+  @@map("categories")
+}
+
+model Transaction {
+  id                String          @id @default(cuid())
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId        String          @map("category_id")
+  category          Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  amount            Decimal         @db.Decimal(12, 2)
+  type              TransactionType
+  description       String
+  date              DateTime        @default(now())
+  paymentMethod     PaymentMethod   @default(CASH) @map("payment_method")
+  merchant          String?
+  notes             String?
+  receiptUrl        String?         @map("receipt_url")
+  isRecurring       Boolean         @default(false) @map("is_recurring")
+  recurringInterval String?         @map("recurring_interval")
+  recurringEndDate  DateTime?       @map("recurring_end_date")
+  recurringGroupId  String?         @map("recurring_group_id")
+  deletedAt         DateTime?       @map("deleted_at")
+  lastViewedAt      DateTime?       @map("last_viewed_at")
+  isAiCategorized     Boolean         @default(false) @map("is_ai_categorized")
+  aiSuggestedCategory String?         @map("ai_suggested_category")
+  tags                String[]        @default([])
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([userId, date])
+  @@index([userId, categoryId])
+  @@index([userId, type])
+  @@index([recurringGroupId])
+  @@index([deletedAt])
+  @@map("transactions")
+}
+
+model Budget {
+  id             String       @id @default(cuid())
+  userId         String       @map("user_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId     String       @map("category_id")
+  category       Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  amount         Decimal      @db.Decimal(12, 2)
+  period         BudgetPeriod @default(MONTHLY)
+  startDate      DateTime     @map("start_date")
+  endDate        DateTime     @map("end_date")
+  alertThreshold Int          @default(80) @map("alert_threshold")
+  rolloverUnused Boolean      @default(false) @map("rollover_unused")
+  month          String       @default("")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@unique([userId, categoryId, month])
+  @@index([userId])
+  @@index([categoryId])
+  @@index([userId, month])
+  @@index([userId, startDate, endDate])
+  @@map("budgets")
+}
+
+model Insight {
+  id            String          @id @default(cuid())
+  userId        String          @map("user_id")
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  message       String
+  summaryText   String?         @map("summary_text")
+  tipText       String?         @map("tip_text")
+  month         String?         @map("month")
+  type          InsightType     @default(BUDGET_PACING)
+  severity      InsightSeverity @default(INFO)
+  actionableTip String?         @map("actionable_tip")
+  metadata      Json?           @default("{}")
+  isRead        Boolean         @default(false) @map("is_read")
+  isArchived    Boolean         @default(false) @map("is_archived")
+  isBookmarked  Boolean         @default(false) @map("is_bookmarked")
+  generatedAt   DateTime        @default(now()) @map("generated_at")
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([userId, month])
+  @@index([userId, generatedAt])
+  @@map("insights")
+}
+
+model SavingTip {
+  id               String         @id @default(cuid())
+  userId           String?        @map("user_id")
+  user             User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  title            String
+  content          String
+  category         TipCategory    @default(CAMPUS_HACKS)
+  targetCategory   String?        @map("target_category")
+  ruleType         String?        @map("rule_type")
+  status           String         @default("ACTIVE") @map("status") // ACTIVE, PINNED, DISMISSED, INACTIVE
+  month            String?        @map("month")
+  impactScore      Float          @default(0) @map("impact_score")
+  estimatedSavings Decimal?       @map("estimated_savings") @db.Decimal(12, 2)
+  difficulty       TipDifficulty  @default(EASY)
+  tags             String[]       @default([])
+  isFeatured       Boolean        @default(false) @map("is_featured")
+  upvotes          Int            @default(0)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  bookmarks        UserSavedTip[]
+
+  @@index([userId])
+  @@index([category])
+  @@index([userId, status])
+  @@index([userId, month])
+  @@map("saving_tips")
+}
+
+model UserSavedTip {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tipId       String    @map("tip_id")
+  tip         SavingTip @relation(fields: [tipId], references: [id], onDelete: Cascade)
+  isCompleted Boolean   @default(false) @map("is_completed")
+  savedAt     DateTime  @default(now()) @map("saved_at")
+
+  @@unique([userId, tipId])
+  @@index([userId])
+  @@index([tipId])
+  @@map("user_saved_tips")
+}
+
+model Notification {
+  id                String           @id @default(cuid())
+  userId            String           @map("user_id")
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              NotificationType
+  title             String
+  message           String
+  linkUrl           String?          @map("link_url")
+  categoryId        String?          @map("category_id")
+  relatedEntityId   String?          @map("related_entity_id")
+  relatedEntityType String?          @map("related_entity_type") // CATEGORY, INSIGHT, TRANSACTION, ANNOUNCEMENT
+  month             String?          @map("month")
+  isRead            Boolean          @default(false) @map("is_read")
+  createdAt         DateTime         @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([userId, type, month, categoryId])
+  @@map("notifications")
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  category    String   @default("GENERAL") // GENERAL, TIP, ALERT, EVENT
+  isActive    Boolean  @default(true) @map("is_active")
+  broadcasted Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("announcements")
+}
+
+model AdminActionLog {
+  id         String   @id @default(cuid())
+  adminId    String   @map("admin_id")
+  adminEmail String   @map("admin_email")
+  action     String
+  targetType String   @map("target_type") // USER, CATEGORY, ANNOUNCEMENT, TIP
+  targetId   String?  @map("target_id")
+  details    Json?    @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([adminId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+  @@map("admin_action_logs")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action     String   // VIEW, CREATE, UPDATE, DELETE, EXPORT, IMPORT
+  entityType String   @map("entity_type") // TRANSACTION, REPORT, INSIGHT, BUDGET
+  entityId   String?  @map("entity_id")
+  title      String
+  details    Json?    @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([userId, entityType, createdAt])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+

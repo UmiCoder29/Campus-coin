@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #FBF9F5;
+  --foreground: #141722;
+  --card: #FFFFFF;
+  --card-foreground: #141722;
+  --popover: #FFFFFF;
+  --popover-foreground: #141722;
+  --primary: #FF722B;
+  --primary-hover: #F26118;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F3EFE7;
+  --secondary-foreground: #222735;
+  --muted: #F5F1EA;
+  --muted-foreground: #767D8C;
+  --accent: #FF722B;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #EFEAE1;
+  --input: #E7E1D6;
+  --ring: #FF722B;
+}
+
+.dark {
+  --background: #0E121B;
+  --foreground: #F2F5F9;
+  --card: #161B27;
+  --card-foreground: #F2F5F9;
+  --popover: #161B27;
+  --popover-foreground: #F2F5F9;
+  --primary: #FF7D38;
+  --primary-hover: #FF8E4D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1F2636;
+  --secondary-foreground: #D3DBE8;
+  --muted: #1B2130;
+  --muted-foreground: #8B96AA;
+  --accent: #FF7D38;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #222938;
+  --input: #222938;
+  --ring: #FF7D38;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  min-height: 100vh;
+}
+
+/* ── Custom Utilities ──────────────────────── */
+
+/* Hide scrollbar but keep scrollability */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area padding for notched mobile devices */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Animate-in for smooth component mounting */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+/* ── App-Wide Root Font Size Scaling ──────────────────────── */
+html[data-font-size="small"] {
+  font-size: 14px;
+}
+html[data-font-size="medium"] {
+  font-size: 16px;
+}
+html[data-font-size="large"] {
+  font-size: 18px;
+}
+
+/* ── Accessibility & Visible Focus States (WCAG AA) ────────── */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 2px !important;
+}
+
+.dark :focus-visible,
+.dark button:focus-visible,
+.dark input:focus-visible,
+.dark select:focus-visible,
+.dark textarea:focus-visible,
+.dark a:focus-visible {
+  outline: 2px solid #818cf8 !important;
+  outline-offset: 2px !important;
+}
+
+/* Smooth modal / dialog transitions */
+.modal-overlay {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-content {
+  animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+
+
