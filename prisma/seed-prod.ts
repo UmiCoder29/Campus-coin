@@ -4,8 +4,16 @@ import {
   Role,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { loadEnvConfig } from "@next/env";
 
-const prisma = new PrismaClient();
+if (!process.env.DATABASE_URL) {
+  delete process.env.DATABASE_URL;
+  loadEnvConfig(process.cwd());
+}
+
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
+});
 
 async function main() {
   console.log("🌱 Running Production-Safe Seed (No demo data)...\n");

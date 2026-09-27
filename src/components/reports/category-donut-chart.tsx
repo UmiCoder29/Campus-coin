@@ -76,7 +76,7 @@ export function CategoryDonutChart({
                         ${d.amount.toFixed(2)}
                       </div>
                       <div className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
-                        {d.percentage}% of {monthName} expenses &bull; {d.count} tx
+                        {d.percentage}% of {monthName} expenses | {d.count} tx
                       </div>
                     </div>
                   );

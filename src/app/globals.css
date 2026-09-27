@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -147,5 +148,48 @@ a:focus-visible {
 .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
 .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
 .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* ── Tactile Textures & Fintech Display Utilities ──────────────── */
+.font-heading {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-bebas {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.pattern-grid-mesh {
+  background-image: 
+    linear-gradient(to right, rgba(255, 114, 43, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 114, 43, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .pattern-grid-mesh {
+  background-image: 
+    linear-gradient(to right, rgba(255, 125, 56, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 125, 56, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.pattern-dots-subtle {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.18) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.dark .pattern-dots-subtle {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Subtle fintech ledger card hover */
+.fintech-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+.fintech-card:hover {
+  transform: translateY(-2px);
+}
+
 
 

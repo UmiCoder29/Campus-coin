@@ -9,17 +9,22 @@ import {
   TrendingUp,
   PiggyBank,
   Sparkles,
-  ArrowUpRight,
   ArrowDownRight,
   Plus,
   Receipt,
   Target,
   Calendar,
-  ChevronRight,
-  CheckCircle,
   AlertTriangle,
   AlertOctagon,
   HelpCircle,
+  GraduationCap,
+  Clock,
+  Flame,
+  ShieldCheck,
+  CheckCircle,
+  Compass,
+  CreditCard,
+  Zap,
 } from "lucide-react";
 import { OverviewChart } from "@/components/reports/overview-chart";
 import { DashboardSkeleton } from "@/components/ui/skeleton";
@@ -30,6 +35,7 @@ import { TipCard, TipItem } from "@/components/saving-tips/tip-card";
 import { MonthlyInsightCard } from "@/components/insights/monthly-insight-card";
 import { RecentActivityWidget } from "@/components/dashboard/recent-activity-widget";
 import { useAuthTransition } from "@/components/auth/auth-transition-context";
+import { HeroAmbientCanvas } from "@/components/ui/hero-ambient-canvas";
 import gsap from "gsap";
 
 interface DashboardMetrics {
@@ -100,7 +106,12 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const userName = session?.user?.name || "Student";
 
-  const { preloadedDashboardMetrics, notifyDashboardReady, justTransitioned, clearJustTransitioned } = useAuthTransition();
+  const {
+    preloadedDashboardMetrics,
+    notifyDashboardReady,
+    justTransitioned,
+    clearJustTransitioned,
+  } = useAuthTransition();
 
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(
     preloadedDashboardMetrics || null
@@ -136,7 +147,10 @@ export default function DashboardPage() {
     }
   }, []);
 
-  const handleTipStatusChange = async (tipId: string, newStatus: "ACTIVE" | "PINNED" | "DISMISSED") => {
+  const handleTipStatusChange = async (
+    tipId: string,
+    newStatus: "ACTIVE" | "PINNED" | "DISMISSED"
+  ) => {
     try {
       const res = await fetch(`/api/saving-tips/${tipId}`, {
         method: "PATCH",
@@ -172,7 +186,7 @@ export default function DashboardPage() {
     }
   }, [metrics, notifyDashboardReady]);
 
-  // Initial mount: always load saving tips and load dashboard metrics if not preloaded
+  // Initial mount
   useEffect(() => {
     loadSavingTips();
     if (!metrics) {
@@ -189,6 +203,40 @@ export default function DashboardPage() {
     }
   }, [justTransitioned, clearJustTransitioned]);
 
+  // Listen for live student profile & target updates from Settings
+  useEffect(() => {
+    const handleProfileUpdated = () => {
+      loadDashboardData();
+    };
+    window.addEventListener("campus-coin:profile-updated", handleProfileUpdated);
+    return () => {
+      window.removeEventListener("campus-coin:profile-updated", handleProfileUpdated);
+    };
+  }, [loadDashboardData]);
+
+  // Tactile keyboard shortcuts: 'e' for expense, 'i' for income
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput =
+        activeEl?.tagName === "INPUT" ||
+        activeEl?.tagName === "TEXTAREA" ||
+        activeEl?.tagName === "SELECT" ||
+        (activeEl as HTMLElement)?.isContentEditable;
+      if (isInput) return;
+
+      if ((e.key === "e" || e.key === "E") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        setQuickAddType("EXPENSE");
+        setQuickAddOpen(true);
+      } else if ((e.key === "i" || e.key === "I") && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        setQuickAddType("INCOME");
+        setQuickAddOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   if ((status === "loading" && !metrics) || loading || !metrics) {
     return <DashboardSkeleton />;
   }
@@ -203,81 +251,214 @@ export default function DashboardPage() {
   const currentSavings = Math.max(0, metrics.allTimeNetBalance);
   const savingsPercent = Math.min(100, Math.round((currentSavings / savingsGoalTarget) * 100));
 
+  // Daily burn rate calculations
+  const daysInMonth = 30;
+  const daysPassed = Math.max(1, daysInMonth - metrics.daysRemaining);
+  const dailyBurnRate = (metrics.monthExpense / daysPassed).toFixed(2);
+
+  // Safe daily spend estimate from budget envelope
+  const remainingBudget = Math.max(0, metrics.budgetTotal - metrics.budgetSpent);
+  const safeDailySpend =
+    metrics.daysRemaining > 0
+      ? remainingBudget > 0
+        ? (remainingBudget / metrics.daysRemaining).toFixed(0)
+        : Math.max(0, (metrics.monthIncome - metrics.monthExpense) / metrics.daysRemaining).toFixed(0)
+      : "0";
+
+  // Burn intensity level (1 to 5) for tactile visual meter
+  const burnIntensity =
+    metrics.monthExpense === 0
+      ? 1
+      : metrics.budgetUsedPercent > 100
+      ? 5
+      : metrics.budgetUsedPercent >= 80
+      ? 4
+      : metrics.budgetUsedPercent >= 50
+      ? 3
+      : 2;
+
   return (
     <div className="space-y-6">
-      {/* ── Welcome Banner ───────────────────── */}
-      <div className="dashboard-section relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-[#FF722B] via-[#FF7D35] to-[#FF8A44] text-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-[#FF722B]/20">
-        <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-8 w-36 h-36 bg-black/10 rounded-full blur-2xl pointer-events-none" />
+      {/* ── Bespoke Collegiate Command Deck ───────────────────── */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-[#FDFCFB] to-[#FFF7ED] dark:from-[#121624] dark:via-[#1A2236] dark:to-[#0D111A] text-[#141722] dark:text-white p-6 sm:p-8 shadow-xs dark:shadow-xl dark:shadow-black/20 border border-[#E7E1D6] dark:border-white/10">
+        {/* Subtle WebGL fluid atmospheric backdrop */}
+        <HeroAmbientCanvas intensity={0.25} className="absolute inset-0 w-full h-full opacity-40 dark:opacity-30" />
 
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 text-white/95 text-xs font-semibold backdrop-blur-sm mb-3">
-            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-            <span>NextGen BudgetBee &bull; {metrics.monthName} {metrics.year}</span>
+        {/* Layered grid pattern overlay */}
+        <div className="absolute inset-0 pattern-grid-mesh opacity-35 dark:opacity-25 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            {/* Integrated ledger metadata row (no pill containers, no middle dot separators) */}
+            <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-[#525866] dark:text-[#94A0B8]">
+              <div className="flex items-center gap-1.5 font-medium">
+                <GraduationCap className="h-4 w-4 text-[#EA580C] dark:text-[#FFA64D]" />
+                <span className="font-heading font-semibold text-[#141722] dark:text-white">Campus Ledger</span>
+                <span className="text-[#8B96AA]">{metrics.monthName} {metrics.year}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-[#C2410C] dark:text-[#FFA64D]" />
+                <span>Day {daysPassed} of {daysInMonth} ({metrics.daysRemaining} days remaining)</span>
+              </div>
+              {metrics.hasBudgets && (
+                <div className="flex items-center gap-1.5 font-semibold">
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      metrics.budgetUsedPercent > 100
+                        ? "bg-rose-500 animate-pulse"
+                        : metrics.budgetUsedPercent >= 80
+                        ? "bg-amber-500"
+                        : "bg-emerald-500"
+                    }`}
+                  />
+                  <span
+                    className={
+                      metrics.budgetUsedPercent > 100
+                        ? "text-rose-600 dark:text-rose-400"
+                        : metrics.budgetUsedPercent >= 80
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-emerald-600 dark:text-emerald-400"
+                    }
+                  >
+                    {metrics.budgetUsedPercent > 100
+                      ? "Cap exceeded"
+                      : metrics.budgetUsedPercent >= 80
+                      ? "Near threshold"
+                      : "Optimal pacing"}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Personalized greeting with display font */}
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight font-heading text-[#141722] dark:text-white">
+                {greeting}, {userName}! 🐝
+              </h1>
+              <p className="text-[#4B5565] dark:text-white/80 text-xs sm:text-sm font-medium leading-relaxed">
+                {metrics.hasBudgets ? (
+                  <>
+                    You&apos;ve deployed{" "}
+                    <span className="font-bold text-[#141722] dark:text-white underline decoration-[#FF722B] decoration-2 underline-offset-4">
+                      {metrics.budgetUsedPercent}%
+                    </span>{" "}
+                    of your {metrics.monthName} category caps (${metrics.budgetSpent.toFixed(0)} of ${metrics.budgetTotal.toFixed(0)}).{" "}
+                    {metrics.daysRemaining > 0 && (
+                      <span className="text-[#4B5565] dark:text-white/90">
+                        Estimated safe spending velocity is{" "}
+                        <span className="font-extrabold text-[#C2410C] dark:text-[#FFA64D]">${safeDailySpend}/day</span>.
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  `Welcome to your campus ledger. Set your monthly category allowances to monitor daily velocity and build savings habits.`
+                )}
+              </p>
+            </div>
+
+            {/* Term Cycle Progress Track */}
+            <div className="pt-1">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="text-[#6B7280] dark:text-white/60 font-medium">Term cycle pacing</span>
+                <span className="text-[#141722] dark:text-white/80 font-bold">{Math.round((daysPassed / daysInMonth) * 100)}% elapsed</span>
+              </div>
+              <div className="w-full h-2 bg-[#E5DECF] dark:bg-white/15 rounded-full overflow-hidden flex gap-0.5">
+                {Array.from({ length: 10 }).map((_, idx) => {
+                  const segPercent = (idx + 1) * 10;
+                  const isFilled = (daysPassed / daysInMonth) * 100 >= segPercent;
+                  return (
+                    <div
+                      key={idx}
+                      className={`flex-1 h-full rounded-xs transition-colors duration-500 ${
+                        isFilled ? "bg-gradient-to-r from-[#FF722B] to-[#FFA64D]" : "bg-[#E5DECF] dark:bg-white/15"
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            {greeting}, {userName}! 🐝
-          </h1>
-          <p className="text-white/90 text-sm mt-1.5 max-w-lg font-medium">
-            {metrics.hasBudgets ? (
-              <>
-                You&apos;ve used{" "}
-                <span className="font-bold text-white">
-                  {metrics.budgetUsedPercent}%
-                </span>{" "}
-                of your {metrics.monthName} category budgets. Pace is{" "}
-                <span className={metrics.budgetUsedPercent > 100 ? "text-amber-200 font-bold" : metrics.budgetUsedPercent >= 80 ? "text-amber-100 font-bold" : "text-emerald-100 font-bold"}>
-                  {metrics.budgetUsedPercent > 100 ? "exceeded" : metrics.budgetUsedPercent >= 80 ? "near limit" : "on track"}
-                </span>.
-              </>
-            ) : (
-              `Keep tabs on your ${metrics.monthName} spending, allowances, and campus budget goals.`
-            )}
-          </p>
-        </div>
 
-        {/* Quick Add Buttons */}
-        <div className="relative z-10 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setQuickAddType("EXPENSE");
-              setQuickAddOpen(true);
-            }}
-            id="quick-add-expense"
-            className="flex items-center gap-1.5 bg-[#181C28] hover:bg-[#252C3D] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-lg shadow-black/20 transition-all duration-200 cursor-pointer active:scale-95"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Expense</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setQuickAddType("INCOME");
-              setQuickAddOpen(true);
-            }}
-            id="quick-add-income"
-            className="flex items-center gap-1.5 bg-[#181C28] hover:bg-[#252C3D] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-lg shadow-black/20 transition-all duration-200 cursor-pointer active:scale-95"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Income</span>
-          </button>
+          {/* Right: Tactile Quick Actions & Safe Spend Compass */}
+          <div className="flex flex-col sm:flex-row xl:flex-col gap-3 shrink-0">
+            {/* Action buttons */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setQuickAddType("EXPENSE");
+                  setQuickAddOpen(true);
+                }}
+                id="quick-add-expense"
+                className="group relative flex items-center gap-2 bg-[#FF722B] hover:bg-[#F26118] active:scale-95 text-white font-bold text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-md shadow-[#FF722B]/25 border border-transparent transition-all cursor-pointer"
+                title="Log Expense (Press 'E')"
+              >
+                <Plus className="h-4 w-4 transition-transform group-hover:rotate-90 duration-200" />
+                <span>Log Expense</span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-black/20 text-white/95 font-mono font-medium">
+                  E
+                </kbd>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setQuickAddType("INCOME");
+                  setQuickAddOpen(true);
+                }}
+                id="quick-add-income"
+                className="group flex items-center gap-2 bg-white hover:bg-[#F7F4EE] dark:bg-white/10 dark:hover:bg-white/15 border-2 border-[#D8D0C5] hover:border-[#FF722B] dark:border-white/20 active:scale-95 text-[#141722] dark:text-white font-bold text-xs sm:text-sm px-4 py-3 rounded-2xl transition-all cursor-pointer shadow-xs"
+                title="Deposit Inflow (Press 'I')"
+              >
+                <Plus className="h-4 w-4 text-[#FF722B] dark:text-[#FFA64D] transition-transform group-hover:rotate-90 duration-200" />
+                <span>Deposit Inflow</span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-[#F1EFEA] dark:bg-white/15 text-[#525866] dark:text-white/80 font-mono font-medium">
+                  I
+                </kbd>
+              </button>
+            </div>
+
+            {/* Smart Daily Allowance Compass */}
+            <div className="p-3.5 rounded-2xl bg-[#FBF9F5] dark:bg-white/5 border border-[#E5DECF] dark:border-white/10 backdrop-blur-md shadow-xs flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-orange-100 dark:bg-orange-500/20 text-[#C2410C] dark:text-[#FFA64D] flex items-center justify-center border border-orange-200 dark:border-orange-500/30">
+                  <Compass className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="text-xs text-[#6B7280] dark:text-white/60 font-medium">
+                    Safe Daily Spend
+                  </div>
+                  <div className="text-base font-black font-heading text-[#141722] dark:text-white">
+                    ${safeDailySpend} <span className="text-xs font-normal text-[#6B7280] dark:text-white/60">/ day</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setBudgetModalOpen(true)}
+                className="text-xs font-bold text-[#C2410C] dark:text-[#FFA64D] hover:underline transition-colors cursor-pointer"
+              >
+                Set Cap
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* ── Zero-Data Onboarding Card ───────── */}
       {!metrics.hasTransactions && (
-        <div className="dashboard-section p-6 rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+        <div className="p-6 rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#FFEFE6] dark:bg-[#FF6422]/20 text-[#FF6422] dark:text-[#FF7D42] flex items-center justify-center shrink-0 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFEFE6] dark:bg-[#FF722B]/15 text-[#FF722B] dark:text-[#FF7D38] flex items-center justify-center shrink-0 shadow-xs border border-[#FF722B]/20">
               <Sparkles className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="font-bold text-[#141722] dark:text-white text-base">
+              <h3 className="font-bold text-[#141722] dark:text-white text-base font-heading">
                 Welcome to your Campus Coin Cockpit!
               </h3>
               <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-0.5 max-w-xl">
-                You haven&apos;t recorded any entries yet. Click &quot;Add Expense&quot; or &quot;Add Income&quot; to log your first transaction, or configure category spending caps under Budgets!
+                You haven&apos;t recorded any entries yet. Click &quot;Log Expense&quot; [E] or &quot;Deposit Inflow&quot; [I] to begin your financial ledger, or set your category caps under Budgets!
               </p>
             </div>
           </div>
@@ -286,166 +467,205 @@ export default function DashboardPage() {
               setQuickAddType("EXPENSE");
               setQuickAddOpen(true);
             }}
-            className="px-4 py-2 rounded-xl bg-[#181C28] hover:bg-[#252C3D] dark:bg-white dark:hover:bg-slate-100 text-white dark:text-[#181C28] text-xs font-bold transition-all shrink-0 shadow-sm cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-[#141722] hover:bg-[#252C3D] dark:bg-[#FF722B] dark:hover:bg-[#F26118] text-white text-xs font-bold transition-all shrink-0 shadow-sm cursor-pointer"
           >
             Record First Transaction
           </button>
         </div>
       )}
 
-      {/* ── KPI Cards ────────────────────────── */}
-      <div className="dashboard-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Net Cashflow */}
-        <div className="group rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-5 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between text-[#767D8C] dark:text-[#8B96AA] mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              {metrics.monthName} Net Cashflow
-            </span>
-            <div className="p-2 rounded-xl bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#4F46E5]/20 dark:text-[#818CF8] group-hover:scale-110 transition-transform">
-              <Wallet className="h-4 w-4" />
+      {/* ── Expressive KPI Telemetry Deck (Stripe/Mercury School of Design) ────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Primary Anchor Ledger (Net Cashflow & Position) - Spans 2 cols */}
+        <div className="fintech-kpi-card lg:col-span-2 rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs flex flex-col justify-between relative overflow-hidden">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-xs font-semibold text-[#6B7280] dark:text-[#8B96AA] flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${metrics.monthNet >= 0 ? "bg-emerald-500" : "bg-amber-500"}`} />
+                <span>{metrics.monthName} Net Cashflow</span>
+              </div>
+              <div className="mt-2 flex items-baseline gap-3 flex-wrap">
+                <div
+                  className={`text-3xl sm:text-4xl font-black font-heading tracking-tight ${
+                    metrics.monthNet >= 0
+                      ? "text-[#141722] dark:text-white"
+                      : "text-amber-700 dark:text-amber-400"
+                  }`}
+                >
+                  {metrics.monthNet >= 0 ? "+" : "-"}${Math.abs(metrics.monthNet).toFixed(2)}
+                </div>
+                <div
+                  className={`text-xs font-semibold flex items-center gap-1 ${
+                    metrics.monthNet >= 0
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-amber-600 dark:text-amber-400"
+                  }`}
+                >
+                  <span>{metrics.monthNet >= 0 ? "Surplus reserve" : "Drawdown balance"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className={`p-3 rounded-2xl shrink-0 ${
+              metrics.monthNet >= 0
+                ? "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                : "bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300"
+            }`}>
+              <Wallet className="h-5 w-5" />
             </div>
           </div>
-          <div className={`text-2xl sm:text-3xl font-black ${metrics.monthNet >= 0 ? "text-[#141722] dark:text-white" : "text-amber-600 dark:text-amber-400"}`}>
-            {metrics.monthNet >= 0 ? "+" : "-"}${Math.abs(metrics.monthNet).toFixed(2)}
-          </div>
-          <div className="flex items-center justify-between text-xs mt-3 pt-2.5 border-t border-[#F3EFE7] dark:border-[#222938] text-[#767D8C] dark:text-[#8B96AA]">
-            <span className="text-[11px] font-medium">All-Time Balance:</span>
-            <span className="font-bold text-[#141722] dark:text-white">
-              ${metrics.allTimeNetBalance.toFixed(2)}
-            </span>
+
+          <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-[#F3EFE7] dark:border-[#222938] text-xs">
+            <div>
+              <span className="text-[#6B7280] dark:text-[#8B96AA] block text-[11px]">All-time ledger balance</span>
+              <span className="font-bold font-mono text-sm text-[#141722] dark:text-white">
+                ${metrics.allTimeNetBalance.toFixed(2)}
+              </span>
+            </div>
+            <div>
+              <span className="text-[#6B7280] dark:text-[#8B96AA] block text-[11px]">Monthly deposits</span>
+              <span className="font-bold font-mono text-sm text-emerald-600 dark:text-emerald-400">
+                +${metrics.monthIncome.toFixed(2)}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Total Income */}
-        <div className="group rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-5 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between text-[#767D8C] dark:text-[#8B96AA] mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              {metrics.monthName} Income
-            </span>
-            <div className="p-2 rounded-xl bg-[#ECFDF5] text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] group-hover:scale-110 transition-transform">
-              <TrendingUp className="h-4 w-4" />
+        {/* Card 2: Outflow & Daily Burn Rate */}
+        <div className="fintech-kpi-card rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-[#6B7280] dark:text-[#8B96AA] mb-2">
+              <span className="text-xs font-semibold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <span>{metrics.monthName} Expenses</span>
+              </span>
+              <div className="p-2 rounded-xl bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300">
+                <TrendingDown className="h-4 w-4" />
+              </div>
             </div>
-          </div>
-          <div className="flex items-baseline justify-between">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
-              +${metrics.monthIncome.toFixed(2)}
-            </div>
-            {/* Sparkline wave visual from reference design */}
-            <svg className="h-5 w-14 text-emerald-500 opacity-70" viewBox="0 0 100 40" fill="none">
-              <path d="M0 32 Q 30 32, 50 18 T 90 8 L 100 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M0 32 Q 30 32, 50 18 T 90 8 L 100 12 L 100 40 L 0 40 Z" fill="currentColor" fillOpacity="0.1" />
-            </svg>
-          </div>
-          <div className="flex items-center justify-between text-xs mt-3 pt-2.5 border-t border-[#F3EFE7] dark:border-[#222938] text-[#767D8C] dark:text-[#8B96AA]">
-            <span className="text-[11px] font-medium">All-Time Income:</span>
-            <span className="font-bold text-[#141722] dark:text-white">
-              ${metrics.allTimeIncome.toFixed(2)}
-            </span>
-          </div>
-        </div>
 
-        {/* Total Expenses */}
-        <div className="group rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-5 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between text-[#767D8C] dark:text-[#8B96AA] mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              {metrics.monthName} Expenses
-            </span>
-            <div className="p-2 rounded-xl bg-[#FFF1F2] text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FB7185] group-hover:scale-110 transition-transform">
-              <TrendingDown className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="flex items-baseline justify-between">
-            <div className="text-2xl sm:text-3xl font-black text-[#E11D48] dark:text-[#FB7185]">
+            <div className="text-2xl sm:text-3xl font-black font-heading text-[#BE123C] dark:text-[#FB7185] mt-1">
               -${metrics.monthExpense.toFixed(2)}
             </div>
-            {/* Sparkline mini-bars from reference design */}
-            <div className="flex items-end gap-1 h-5 opacity-70">
-              <span className="w-1.5 h-2 bg-[#FF722B] rounded-full" />
-              <span className="w-1.5 h-4 bg-[#FF722B] rounded-full" />
-              <span className="w-1.5 h-3 bg-[#FF722B] rounded-full" />
-              <span className="w-1.5 h-5 bg-[#FF722B] rounded-full" />
+
+            <div className="text-xs text-[#6B7280] dark:text-[#8B96AA] mt-2">
+              <span>{metrics.totalTransactionCount} transactions logged</span>
             </div>
           </div>
-          <div className="flex items-center justify-between text-xs mt-3 pt-2.5 border-t border-[#F3EFE7] dark:border-[#222938] text-[#767D8C] dark:text-[#8B96AA]">
-            <span className="text-[11px] font-medium flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <span>Days Remaining:</span>
+
+          <div className="mt-5 pt-3 border-t border-[#F3EFE7] dark:border-[#222938] flex items-center justify-between text-xs">
+            <span className="text-[#6B7280] dark:text-[#8B96AA] flex items-center gap-1">
+              <Flame className="h-3.5 w-3.5 text-orange-500" />
+              <span>Burn rate:</span>
             </span>
-            <span className="font-bold text-[#141722] dark:text-white">
-              {metrics.daysRemaining} days
+            <span className="font-bold text-[#141722] dark:text-white font-mono">
+              ${dailyBurnRate} / day
             </span>
           </div>
         </div>
 
-        {/* Budget Status */}
-        <div className="group rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-5 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between text-[#767D8C] dark:text-[#8B96AA] mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Budget Status
-            </span>
-            <div className="p-2 rounded-xl bg-[#FFF7ED] text-[#EA580C] dark:bg-[#EA580C]/20 dark:text-[#FB923C] group-hover:scale-110 transition-transform">
-              <PiggyBank className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#141722] dark:text-white">
-            {metrics.hasBudgets ? `${metrics.budgetUsedPercent}%` : "No limits"}
-          </div>
-          <div className="w-full bg-[#F3EFE7] dark:bg-[#222938] h-2 rounded-full overflow-hidden mt-3">
-            <div
-              className={`h-full rounded-full transition-all duration-1000 ${
-                metrics.budgetUsedPercent > 100
-                  ? "bg-red-500"
-                  : metrics.budgetUsedPercent >= 80
-                  ? "bg-amber-500"
-                  : "bg-[#FF722B]"
-              }`}
-              style={{ width: `${Math.min(metrics.budgetUsedPercent, 100)}%` }}
-            />
-          </div>
-          <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA] mt-1.5 flex items-center justify-between">
-            <span>
-              ${metrics.budgetSpent.toFixed(0)} of ${metrics.budgetTotal.toFixed(0)} cap
-            </span>
-            {metrics.hasBudgets && (
-              <span className={`font-bold ${metrics.budgetUsedPercent > 100 ? "text-red-500" : metrics.budgetUsedPercent >= 80 ? "text-amber-500" : "text-emerald-500"}`}>
-                {metrics.budgetUsedPercent > 100 ? "Over" : metrics.budgetUsedPercent >= 80 ? "Near limit" : "Healthy"}
+        {/* Card 3: Budget Envelope Pacing Meter */}
+        <div className="fintech-kpi-card rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-[#6B7280] dark:text-[#8B96AA] mb-2">
+              <span className="text-xs font-semibold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#EA580C]" />
+                <span>Budget Envelopes</span>
               </span>
+              <div className="p-2 rounded-xl bg-orange-50 dark:bg-orange-500/15 text-[#C2410C] dark:text-orange-300">
+                <PiggyBank className="h-4 w-4" />
+              </div>
+            </div>
+
+            <div className="flex items-baseline justify-between mt-1">
+              <div className="text-2xl sm:text-3xl font-black font-heading text-[#141722] dark:text-white">
+                {metrics.hasBudgets ? `${metrics.budgetUsedPercent}%` : "No limits set"}
+              </div>
+              {metrics.hasBudgets && (
+                <span
+                  className={`text-xs font-semibold ${
+                    metrics.budgetUsedPercent > 100
+                      ? "text-rose-600 dark:text-rose-400"
+                      : metrics.budgetUsedPercent >= 80
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-emerald-600 dark:text-emerald-400"
+                  }`}
+                >
+                  {metrics.budgetUsedPercent > 100
+                    ? "Cap exceeded"
+                    : metrics.budgetUsedPercent >= 80
+                    ? "Near threshold"
+                    : "Safe pace"}
+                </span>
+              )}
+            </div>
+
+            {/* Single clean proportional progress bar */}
+            {metrics.hasBudgets && (
+              <div className="w-full bg-[#E5DECF] dark:bg-[#1E2536] h-2 rounded-full overflow-hidden mt-3">
+                <div
+                  className={`h-full rounded-full transition-all duration-700 ${
+                    metrics.budgetUsedPercent > 100
+                      ? "bg-rose-500"
+                      : metrics.budgetUsedPercent >= 80
+                      ? "bg-amber-500"
+                      : "bg-[#FF722B]"
+                  }`}
+                  style={{ width: `${Math.min(metrics.budgetUsedPercent, 100)}%` }}
+                />
+              </div>
             )}
+          </div>
+
+          <div className="text-xs text-[#6B7280] dark:text-[#8B96AA] mt-5 pt-3 border-t border-[#F3EFE7] dark:border-[#222938] flex items-center justify-between">
+            <span className="font-mono text-[11px]">
+              ${metrics.budgetSpent.toFixed(0)} of ${metrics.budgetTotal.toFixed(0)} spent
+            </span>
+            <button
+              onClick={() => setBudgetModalOpen(true)}
+              className="text-[#C2410C] dark:text-[#FFA64D] hover:underline font-semibold text-xs cursor-pointer"
+            >
+              Adjust caps
+            </button>
           </div>
         </div>
       </div>
 
-      {/* ── Spending Chart + Top Category ──── */}
-      <div className="dashboard-section grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Spending Trend Chart */}
-        <div className="lg:col-span-2 rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
+      {/* ── Spending Velocity Chart + Top Category Spotlight & Vault ──── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Spending Trend Chart (2 Cols) */}
+        <div className="lg:col-span-2 rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs fintech-card">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
             <div>
-              <h2 className="text-lg font-black text-[#141722] dark:text-white">
-                Semester Spending Velocity
+              <h2 className="text-lg font-black font-heading text-[#141722] dark:text-white">
+                Semester Spending Velocity & Pacing
               </h2>
-              <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-0.5">
-                Monthly actual expenses vs. student budget cap
+              <p className="text-xs text-[#6B7280] dark:text-[#8B96AA] mt-0.5">
+                Real-time campus outflow cadence with interactive projection guidelines and dotted velocity matrix
               </p>
             </div>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#FFEFE6] text-[#FF6422] dark:bg-[#FF6422]/20 dark:text-[#FF7D42]">
-              USD
-            </span>
           </div>
+
           <OverviewChart />
         </div>
 
-        {/* This Month's Top Category */}
+        {/* Top Category Spotlight & Savings Goal Vault (1 Col) */}
         <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs flex flex-col justify-between">
           <div>
-            <h2 className="text-lg font-black text-[#141722] dark:text-white mb-3">
-              This Month&apos;s Top Category
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-black font-heading text-[#141722] dark:text-white">
+                Top Expenditure Spotlight
+              </h2>
+              <span className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
+                {metrics.monthName}
+              </span>
+            </div>
 
             {metrics.topCategory ? (
-              <div className="flex flex-col items-center justify-center text-center p-5 rounded-2xl bg-[#FBF9F5] dark:bg-[#111520] border border-[#EFEAE1] dark:border-[#222938]">
+              /* Campus Spend Ticket Aesthetic */
+              <div className="relative p-5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-center overflow-hidden">
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md mb-3"
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-xs mx-auto mb-3"
                   style={{ backgroundColor: metrics.topCategory.color || "#FF722B" }}
                 >
                   <CategoryIcon
@@ -453,32 +673,32 @@ export default function DashboardPage() {
                     className="h-7 w-7 text-white"
                   />
                 </div>
-                <div className="text-base font-bold text-[#141722] dark:text-white">
+
+                <div className="text-sm font-extrabold text-[#141722] dark:text-white font-heading">
                   {metrics.topCategory.name}
                 </div>
-                <div className="text-2xl font-black text-[#141722] dark:text-white mt-1">
+                <div className="text-2xl font-black font-heading text-[#141722] dark:text-white mt-0.5">
                   ${metrics.topCategory.amount.toFixed(2)}
                 </div>
-                <div className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-1">
-                  {metrics.topCategory.percentOfTotal}% of total {metrics.monthName} expenses
+
+                <div className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-1 font-mono">
+                  {metrics.topCategory.percentOfTotal}% of total monthly outflow
                 </div>
-                <div
-                  className={`inline-flex items-center gap-1 text-xs font-bold mt-2.5 px-2.5 py-0.5 rounded-full ${
-                    metrics.topCategory.trendUp
-                      ? "bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400"
-                      : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400"
-                  }`}
-                >
-                  {metrics.topCategory.trendUp ? (
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  ) : (
-                    <ArrowDownRight className="h-3.5 w-3.5" />
-                  )}
-                  <span>{metrics.topCategory.trend} vs last month</span>
+
+                <div className="mt-3 pt-2.5 border-t border-[#EFEAE1] dark:border-[#222938]">
+                  <div
+                    className={`text-xs font-semibold ${
+                      metrics.topCategory.trendUp
+                        ? "text-rose-600 dark:text-rose-400"
+                        : "text-emerald-600 dark:text-emerald-400"
+                    }`}
+                  >
+                    <span>{metrics.topCategory.trend} vs last month</span>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="p-8 text-center rounded-2xl bg-[#FBF9F5] dark:bg-[#111520] border border-[#EFEAE1] dark:border-[#222938]">
+              <div className="p-8 text-center rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
                 <HelpCircle className="h-8 w-8 text-[#9EA5B4] dark:text-slate-600 mx-auto mb-2" />
                 <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] font-medium">
                   No expenses recorded in {metrics.monthName} yet
@@ -487,112 +707,109 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Student Savings Goal Mini-Widget */}
-          <div className="mt-4 p-3.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#111520] border border-[#EFEAE1] dark:border-[#222938]">
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-bold text-[#525866] dark:text-[#94A0B8] flex items-center gap-1.5">
-                <Target className="h-3.5 w-3.5 text-[#FF722B]" />
-                <span>Savings Goal Target</span>
+          {/* Student Savings Goal Mini-Vault Widget */}
+          <div className="mt-4 p-4 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="font-semibold text-[#525866] dark:text-[#94A0B8] flex items-center gap-1.5 font-heading">
+                <Target className="h-4 w-4 text-[#FF722B]" />
+                <span>Semester savings vault</span>
               </span>
-              <span className="font-black text-[#141722] dark:text-white">
-                ${currentSavings.toFixed(0)} / ${savingsGoalTarget}
+              <span className="font-bold text-[#141722] dark:text-white font-mono">
+                ${currentSavings.toFixed(0)} of ${savingsGoalTarget}
               </span>
             </div>
-            <div className="w-full bg-[#EAE5DC] dark:bg-[#222938] h-2 rounded-full overflow-hidden">
+
+            <div className="w-full bg-[#EAE5DC] dark:bg-[#1E2536] h-2 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#FF722B] to-[#FF8A44] transition-all duration-1000"
+                className="h-full rounded-full bg-gradient-to-r from-[#FF722B] to-[#FFA64D] transition-all duration-1000"
                 style={{ width: `${savingsPercent}%` }}
               />
             </div>
-            <div className="text-right text-[10px] text-[#767D8C] dark:text-[#8B96AA] mt-1 font-bold">
-              {savingsPercent}% achieved
+
+            <div className="flex items-center justify-between text-xs text-[#767D8C] dark:text-[#8B96AA] mt-2 font-mono">
+              <span>{savingsPercent >= 100 ? "Goal completed" : "Accumulating reserve"}</span>
+              <span className="font-bold text-[#141722] dark:text-white">{savingsPercent}% achieved</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Budget vs Actual Widget + Recent Activity ── */}
-      <div className="dashboard-section grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Budget vs Actual Widget */}
+      {/* ── Budget vs Actual Envelope Board & Recent Activity ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Budget vs Actual Envelopes (Tabular Data-Dense Stripe/Mercury layout) */}
         <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-lg font-black text-[#141722] dark:text-white">
-                  Budget vs. Actual
+                <h2 className="text-lg font-black font-heading text-[#141722] dark:text-white">
+                  Budget Envelopes vs. Actuals
                 </h2>
                 <p className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
-                  {metrics.monthName} {metrics.year} category caps
+                  {metrics.monthName} {metrics.year} category caps & pace
                 </p>
               </div>
               <Link
                 href="/budgets"
-                className="text-xs font-bold text-[#FF6422] dark:text-[#FF7D42] hover:underline flex items-center gap-0.5"
+                className="text-xs font-bold text-[#FF722B] dark:text-[#FF7D38] hover:underline"
               >
-                <span>Manage Budgets</span>
-                <ChevronRight className="h-3.5 w-3.5" />
+                Planner
               </Link>
             </div>
 
             {metrics.hasBudgets ? (
-              <div className="space-y-4">
+              <div className="divide-y divide-[#F3EFE7] dark:divide-[#222938]">
                 {metrics.budgetVsActual.map((item) => (
-                  <div key={item.id} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: item.categoryColor }}
-                        />
-                        <span className="font-bold text-[#141722] dark:text-white">
+                  <div
+                    key={item.id}
+                    className="py-3 flex items-center justify-between gap-4 hover:bg-[#FBF9F5]/70 dark:hover:bg-[#1E2536]/30 px-2 rounded-xl transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: item.categoryColor }}
+                      />
+                      <div className="min-w-0">
+                        <div className="text-xs font-bold text-[#141722] dark:text-white truncate">
                           {item.categoryName}
-                        </span>
-                        {item.status === "EXCEEDED" && (
-                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400">
-                            <AlertOctagon className="h-2.5 w-2.5" /> Over
-                          </span>
-                        )}
-                        {item.status === "WARNING" && (
-                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">
-                            <AlertTriangle className="h-2.5 w-2.5" /> 80%+
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <span className={`font-bold ${item.isOver ? "text-red-600 dark:text-red-400" : "text-[#141722] dark:text-white"}`}>
-                          ${item.spent.toFixed(0)}
-                        </span>
-                        <span className="text-[#767D8C] dark:text-[#8B96AA]"> / ${item.limit.toFixed(0)}</span>
+                        </div>
+                        <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA]">
+                          <span>{item.percentage}% deployed, {item.remaining > 0 ? `$${item.remaining.toFixed(0)} remaining` : `$${item.overAmount.toFixed(0)} over cap`}</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="w-full bg-[#F3EFE7] dark:bg-[#222938] h-2 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-700 ${
-                          item.isOver
-                            ? "bg-red-500"
-                            : item.status === "WARNING"
-                            ? "bg-amber-500"
-                            : "bg-[#FF722B]"
-                        }`}
-                        style={{ width: `${Math.min(item.percentage, 100)}%` }}
-                      />
+                    <div className="text-right shrink-0">
+                      <div className="text-xs font-mono font-bold text-[#141722] dark:text-white">
+                        ${item.spent.toFixed(0)} <span className="text-[#767D8C] dark:text-[#8B96AA] font-normal">/ ${item.limit.toFixed(0)}</span>
+                      </div>
+                      <div className="w-24 bg-[#EAE5DC] dark:bg-[#1E2536] h-1.5 rounded-full overflow-hidden mt-1 ml-auto">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            item.isOver
+                              ? "bg-rose-500"
+                              : item.status === "WARNING"
+                              ? "bg-amber-500"
+                              : "bg-[#FF722B]"
+                          }`}
+                          style={{ width: `${Math.min(item.percentage, 100)}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center rounded-2xl border-2 border-dashed border-[#EFEAE1] dark:border-[#222938] bg-[#FBF9F5]/60 dark:bg-[#111520]/40">
+              <div className="p-8 text-center rounded-2xl border-2 border-dashed border-[#EFEAE1] dark:border-[#222938] bg-[#FBF9F5]/60 dark:bg-[#0E121B]/40">
                 <PiggyBank className="h-8 w-8 text-[#9EA5B4] mx-auto mb-2" />
-                <h4 className="text-sm font-bold text-[#141722] dark:text-white">
+                <h4 className="text-sm font-bold text-[#141722] dark:text-white font-heading">
                   No active budgets for {metrics.monthName}
                 </h4>
                 <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] max-w-xs mx-auto mt-1 mb-4">
-                  Set category spending limits to pace your cashflow and get automated threshold alerts!
+                  Set category spending limits to pace your cashflow and receive automated threshold alerts!
                 </p>
                 <button
                   onClick={() => setBudgetModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF722B] hover:bg-[#FF8543] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF722B] hover:bg-[#F26118] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Set Up Category Budget</span>
@@ -603,61 +820,68 @@ export default function DashboardPage() {
 
           <Link
             href="/budgets"
-            className="mt-4 text-center py-2.5 rounded-xl border border-[#EFEAE1] dark:border-[#222938] text-xs font-bold text-[#FF6422] dark:text-[#FF7D42] hover:bg-[#FBF9F5] dark:hover:bg-[#1E2536] transition-colors"
+            className="mt-4 text-center py-2.5 rounded-xl border border-[#EFEAE1] dark:border-[#222938] text-xs font-bold text-[#FF722B] dark:text-[#FF7D38] hover:bg-[#FBF9F5] dark:hover:bg-[#1E2536] transition-colors"
           >
-            View Full Budget Planner &rarr;
+            Open Full Budget Planner
           </Link>
         </div>
 
-        {/* Recent Activity */}
-        <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs flex flex-col justify-between">
+        {/* Recent Campus Activity Ledger */}
+        <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs fintech-card flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-black text-[#141722] dark:text-white">
-                Recent Activity
-              </h2>
+              <div>
+                <h2 className="text-lg font-black font-heading text-[#141722] dark:text-white">
+                  Recent Campus Activity
+                </h2>
+                <p className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
+                  Latest recorded ledger entries & vouchers
+                </p>
+              </div>
               <Link
                 href="/transactions"
-                className="text-xs font-bold text-[#FF6422] dark:text-[#FF7D42] hover:underline flex items-center gap-0.5"
+                className="text-xs font-bold text-[#FF722B] dark:text-[#FF7D38] hover:underline"
               >
-                <span>View All</span>
-                <ChevronRight className="h-3.5 w-3.5" />
+                View All
               </Link>
             </div>
 
             {metrics.recentTransactions.length > 0 ? (
-              <div className="divide-y divide-[#F3EFE7] dark:divide-[#222938]">
+              <div className="space-y-2">
                 {metrics.recentTransactions.map((tx) => (
                   <div
                     key={tx.id}
-                    className="py-3 flex items-center justify-between group hover:bg-[#FBF9F5] dark:hover:bg-[#1E2536] -mx-2 px-2 rounded-xl transition-colors"
+                    className="p-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] flex items-center justify-between gap-3 group hover:border-[#FF722B]/40 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
                         style={{ backgroundColor: tx.color }}
                       >
                         <CategoryIcon name={tx.icon} className="h-4 w-4 text-white" />
                       </div>
                       <div className="min-w-0">
-                        <div className="text-sm font-bold text-[#141722] dark:text-white truncate">
+                        <div className="text-xs font-bold text-[#141722] dark:text-white truncate font-heading">
                           {tx.merchant}
                         </div>
-                        <div className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
-                          {tx.category} &bull;{" "}
-                          {new Date(tx.date).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
+                        <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA] flex items-center gap-2">
+                          <span>{tx.category}</span>
+                          <span className="text-[#A0AAB8] dark:text-[#64748B]">/</span>
+                          <span>
+                            {new Date(tx.date).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
                         </div>
                       </div>
                     </div>
 
                     <div
-                      className={`text-sm font-bold shrink-0 ${
+                      className={`text-xs font-extrabold font-mono shrink-0 px-2.5 py-1 rounded-lg ${
                         tx.type === "INCOME"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-[#E11D48] dark:text-[#FB7185]"
+                          ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
+                          : "bg-rose-50 text-[#E11D48] dark:bg-rose-950/40 dark:text-[#FB7185]"
                       }`}
                     >
                       {tx.type === "INCOME" ? "+" : "-"}${Math.abs(tx.amount).toFixed(2)}
@@ -666,10 +890,10 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center rounded-2xl bg-[#FBF9F5] dark:bg-[#111520] border border-[#EFEAE1] dark:border-[#222938]">
+              <div className="p-8 text-center rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
                 <Receipt className="h-8 w-8 text-[#9EA5B4] dark:text-slate-600 mx-auto mb-2" />
                 <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] font-medium">
-                  No transactions recorded yet
+                  No campus transactions recorded yet
                 </p>
               </div>
             )}
@@ -677,29 +901,24 @@ export default function DashboardPage() {
 
           <Link
             href="/transactions"
-            className="mt-4 text-center py-2.5 rounded-xl border border-[#EFEAE1] dark:border-[#222938] text-xs font-bold text-[#FF6422] dark:text-[#FF7D42] hover:bg-[#FBF9F5] dark:hover:bg-[#1E2536] transition-colors"
+            className="mt-4 text-center py-2.5 rounded-xl border border-[#EFEAE1] dark:border-[#222938] text-xs font-bold text-[#FF722B] dark:text-[#FF7D38] hover:bg-[#FBF9F5] dark:hover:bg-[#1E2536] transition-colors"
           >
-            Open Transaction Ledger &rarr;
+            Open Transaction Ledger
           </Link>
         </div>
       </div>
 
       {/* ── Personalized Saving Tips (Rule-Based Engine) ── */}
-      <div className="dashboard-section rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs space-y-4">
+      <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs fintech-card space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#F3EFE7] dark:border-[#222938]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-gradient-to-r from-[#FF722B] to-[#FF8A44] text-white shrink-0 shadow-md shadow-[#FF722B]/20">
+            <div className="p-2.5 rounded-2xl bg-gradient-to-r from-[#FF722B] to-[#FFA64D] text-white shrink-0 shadow-md shadow-[#FF722B]/20">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-[#141722] dark:text-white">
-                  Personalized Saving Advice
-                </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFEFE6] dark:bg-[#FF6422]/20 text-[#FF6422] dark:text-[#FF7D42]">
-                  Rule-Based Engine
-                </span>
-              </div>
+              <h3 className="text-base font-black font-heading text-[#141722] dark:text-white">
+                Personalized Saving Advice
+              </h3>
               <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-0.5">
                 Tailored recommendations evaluated from your {metrics.monthName} spending velocity & caps
               </p>
@@ -707,18 +926,17 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/saving-tips"
-            className="shrink-0 text-xs font-bold text-[#FF6422] dark:text-[#FF7D42] hover:text-[#FF8A44] flex items-center gap-1 group"
+            className="shrink-0 text-xs font-bold text-[#FF722B] dark:text-[#FF7D38] hover:underline hover:text-[#FFA64D] transition-colors"
           >
-            <span>View All Tips & History</span>
-            <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+            All Tips & History
           </Link>
         </div>
 
         {/* Low-data friendly prompt for new users */}
         {isTipsLowData ? (
-          <div className="p-5 rounded-2xl bg-[#FBF9F5] dark:bg-[#111520] border border-[#EFEAE1] dark:border-[#222938] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div className="p-5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
             <div>
-              <h4 className="text-xs font-bold text-[#141722] dark:text-white">
+              <h4 className="text-xs font-bold font-heading text-[#141722] dark:text-white">
                 Gathering Campus Routine Data
               </h4>
               <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-0.5 max-w-lg">
@@ -731,7 +949,7 @@ export default function DashboardPage() {
                 setQuickAddType("EXPENSE");
                 setQuickAddOpen(true);
               }}
-              className="px-3.5 py-1.5 rounded-xl bg-[#181C28] dark:bg-white text-white dark:text-[#181C28] text-xs font-bold hover:bg-[#252C3D] dark:hover:bg-slate-100 transition-colors shrink-0 shadow-2xs cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#141722] dark:bg-white text-white dark:text-[#141722] text-xs font-bold hover:bg-[#252C3D] dark:hover:bg-slate-100 transition-colors shrink-0 shadow-xs cursor-pointer"
             >
               Add Expense
             </button>
@@ -754,8 +972,8 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ── Optional Gemini AI Monthly Narrative & Recommendation ── */}
-      <div className="dashboard-section">
+      {/* ── Gemini AI Monthly Narrative & Recommendation ── */}
+      <div>
         <MonthlyInsightCard
           month={metrics.month}
           monthName={metrics.monthName}
@@ -764,7 +982,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Recent Activity & Session Trail Widget ── */}
-      <div className="dashboard-section">
+      <div>
         <RecentActivityWidget />
       </div>
 
@@ -792,3 +1010,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

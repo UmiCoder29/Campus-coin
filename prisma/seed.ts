@@ -8,8 +8,17 @@ import {
   Role,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { loadEnvConfig } from "@next/env";
+import crypto from "crypto";
 
-const prisma = new PrismaClient();
+if (!process.env.DATABASE_URL) {
+  delete process.env.DATABASE_URL;
+  loadEnvConfig(process.cwd());
+}
+
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
+});
 
 // ────────────────────────────────────────────────────
 // Helpers
@@ -17,12 +26,12 @@ const prisma = new PrismaClient();
 function daysAgo(n: number): Date {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  d.setHours(Math.floor(Math.random() * 14) + 8, Math.floor(Math.random() * 60), 0, 0);
+  d.setHours(crypto.randomInt(8, 22), crypto.randomInt(0, 60), 0, 0);
   return d;
 }
 
 function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[crypto.randomInt(0, arr.length)];
 }
 
 // ────────────────────────────────────────────────────

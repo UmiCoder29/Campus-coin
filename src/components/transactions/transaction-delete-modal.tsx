@@ -73,7 +73,7 @@ export function TransactionDeleteModal({
             Delete Transaction?
           </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            &quot;{transaction.description}&quot; &bull; ${Number(transaction.amount).toFixed(2)}
+            &quot;{transaction.description}&quot; | ${Number(transaction.amount).toFixed(2)}
           </p>
 
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">

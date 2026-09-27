@@ -125,7 +125,7 @@ export function CategoryPicker({
       {label && (
         <label
           htmlFor={id}
-          className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+          className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
         >
           {label} {required && <span className="text-red-500">*</span>}
         </label>

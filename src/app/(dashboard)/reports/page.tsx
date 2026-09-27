@@ -272,7 +272,7 @@ function ReportsContent() {
               </div>
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Campus Coin &bull; Student Financial Report
+                  Campus Coin | Student Financial Report
                 </h2>
                 <div className="text-xs text-slate-400">
                   Account: <span className="font-semibold text-slate-700 dark:text-slate-300">{reportData.user.name}</span> ({reportData.user.university})
@@ -288,7 +288,7 @@ function ReportsContent() {
                 {selectedCategoryIds.length > 0
                   ? `Filtered: ${selectedCategoryIds.length} categories`
                   : "All Campus Categories"}{" "}
-                &bull; {selectedType === "ALL" ? "All Cashflow" : selectedType}
+                | {selectedType === "ALL" ? "All Cashflow" : selectedType}
               </div>
             </div>
           </div>
@@ -441,7 +441,7 @@ function ReportsContent() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 text-center">
-                Green bars: Student Income &bull; Rose bars: Campus Expenses
+                Green bars: Student Income | Rose bars: Campus Expenses
               </div>
             </div>
 
@@ -548,7 +548,7 @@ function ReportsContent() {
                       </div>
 
                       <div className="text-[11px] text-right text-slate-400">
-                        {b.percentage.toFixed(0)}% consumed &bull; {b.remaining >= 0 ? `$${b.remaining.toFixed(2)} left` : `$${Math.abs(b.remaining).toFixed(2)} over`}
+                        {b.percentage.toFixed(0)}% consumed | {b.remaining >= 0 ? `$${b.remaining.toFixed(2)} left` : `$${Math.abs(b.remaining).toFixed(2)} over`}
                       </div>
                     </div>
                   ))}
@@ -596,9 +596,9 @@ function ReportsContent() {
           {/* Export Footer Disclaimer (included in print canvas) */}
           <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
             <span>
-              Campus Coin NextGen BudgetBee Financial Engine &bull; Generated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              Campus Coin NextGen BudgetBee Financial Engine | Generated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </span>
-            <span>Personal Record-Keeping Copy &bull; TechWiz7 Finalist Solution</span>
+            <span>Personal Record-Keeping Copy | TechWiz7 Finalist Solution</span>
           </div>
         </div>
       )}

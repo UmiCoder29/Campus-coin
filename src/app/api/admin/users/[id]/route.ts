@@ -262,7 +262,7 @@ export async function POST(
     // Also support resetting to temporary standard password for direct demo
     let tempPassword: string | null = null;
     if (action === "SET_TEMP_PASSWORD") {
-      tempPassword = `Campus#${Math.floor(1000 + Math.random() * 9000)}!`;
+      tempPassword = `Campus#${crypto.randomInt(1000, 10000)}!`;
       const hash = await bcrypt.hash(tempPassword, 10);
       await prisma.user.update({
         where: { id },

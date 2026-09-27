@@ -94,8 +94,8 @@ function ResetPasswordForm() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              New Password (min. 6 chars)
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              New password (min. 6 characters)
             </label>
             <input
               type="password"
@@ -110,8 +110,8 @@ function ResetPasswordForm() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Confirm New Password
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Confirm new password
             </label>
             <input
               type="password"

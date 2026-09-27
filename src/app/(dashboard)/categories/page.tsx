@@ -107,7 +107,7 @@ export default function CategoriesPage() {
             </span>
           </div>
           <span className="text-xs text-slate-400">
-            Fully editable &bull; Customizable tags
+            Fully editable | Customizable tags
           </span>
         </div>
 
@@ -153,7 +153,7 @@ export default function CategoriesPage() {
                       </strong>{" "}
                       transactions
                     </span>
-                    <span>&bull;</span>
+                    <span>|</span>
                     <span>
                       <strong className="text-slate-700 dark:text-slate-300">
                         {cat._count?.budgets || 0}
@@ -256,7 +256,7 @@ export default function CategoriesPage() {
                     >
                       {cat.type}
                     </span>
-                    <span>&bull;</span>
+                    <span>|</span>
                     <span>{cat._count?.transactions || 0} entries</span>
                   </div>
                 </div>

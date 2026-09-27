@@ -34,7 +34,7 @@ export function ReportExportButton({
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [emailSubject, setEmailSubject] = useState(
-    `Campus Coin Financial Summary • ${monthStr}`
+    `Campus Coin Financial Summary | ${monthStr}`
   );
   const [emailNotes, setEmailNotes] = useState("");
   const [emailFormat, setEmailFormat] = useState<"PDF" | "SUMMARY">("PDF");
@@ -249,7 +249,7 @@ export function ReportExportButton({
                     Share / Email Report
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Period: {monthStr} &bull; Generated for {userName}
+                    Period: {monthStr} | Generated for {userName}
                   </p>
                 </div>
               </div>

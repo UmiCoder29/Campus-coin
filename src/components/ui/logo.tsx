@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface LogoProps {
   className?: string;
@@ -10,27 +11,31 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", size = "md", href = "/dashboard" }: LogoProps) {
-  const heightClasses = {
-    sm: "h-7",
-    md: "h-9",
-    lg: "h-11",
+  const sizeMap = {
+    sm: { height: 28, width: 120, className: "h-7" },
+    md: { height: 36, width: 150, className: "h-9" },
+    lg: { height: 44, width: 180, className: "h-11" },
   }[size];
 
   const content = (
     <div className={`relative inline-flex items-center select-none ${className}`}>
       {/* Light Mode Logo */}
-      <img
+      <Image
         src="/Images/lightmode-logo.png"
         alt="Campus Coin"
-        className={`${heightClasses} w-auto object-contain block dark:hidden transition-transform duration-200 hover:scale-[1.02]`}
-        loading="eager"
+        width={sizeMap.width}
+        height={sizeMap.height}
+        priority
+        className={`${sizeMap.className} w-auto object-contain block dark:hidden transition-transform duration-200 hover:scale-[1.02]`}
       />
       {/* Dark Mode Logo */}
-      <img
+      <Image
         src="/Images/Darkmode-logo.png"
         alt="Campus Coin"
-        className={`${heightClasses} w-auto object-contain hidden dark:block transition-transform duration-200 hover:scale-[1.02]`}
-        loading="eager"
+        width={sizeMap.width}
+        height={sizeMap.height}
+        priority
+        className={`${sizeMap.className} w-auto object-contain hidden dark:block transition-transform duration-200 hover:scale-[1.02]`}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X, Calendar, DollarSign, Repeat, AlertCircle, Loader2, ArrowUpRight, ArrowDownRight, Sparkles } from "lucide-react";
+import { X, DollarSign, Repeat, AlertCircle, Loader2, ArrowUpRight, ArrowDownRight, Sparkles } from "lucide-react";
 import { CategoryPicker, CategoryItem } from "@/components/categories/category-picker";
 
 export interface TransactionItem {
@@ -336,8 +336,8 @@ export function TransactionModal({
 
           {/* Type Toggle */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Entry Type
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Entry type
             </label>
             <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl">
               <button
@@ -376,7 +376,7 @@ export function TransactionModal({
           {/* Amount & Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Amount ($) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -402,7 +402,7 @@ export function TransactionModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Date <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -447,7 +447,7 @@ export function TransactionModal({
                 <div className="flex items-center gap-1.5 truncate min-w-0">
                   <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                   <span className="text-purple-900 dark:text-purple-200 truncate">
-                    AI suggests: <strong className="font-bold">{aiSuggestion.categoryName}</strong> &bull; Accept?
+                    AI suggests: <strong className="font-bold">{aiSuggestion.categoryName}</strong> | Accept?
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -518,8 +518,8 @@ export function TransactionModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                  Description / Item
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                  Description / item
                 </label>
                 {isAiCategorizing && (
                   <span className="text-[10px] text-purple-600 dark:text-purple-400 flex items-center gap-1 font-semibold animate-pulse">
@@ -542,8 +542,8 @@ export function TransactionModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                Merchant / Payer
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Merchant / payer
               </label>
               <input
                 type="text"
@@ -558,8 +558,8 @@ export function TransactionModal({
 
           {/* Payment Method */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Payment Method
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Payment method
             </label>
             <select
               value={paymentMethod}
@@ -665,8 +665,8 @@ export function TransactionModal({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Personal Notes
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Personal notes
             </label>
             <textarea
               rows={2}

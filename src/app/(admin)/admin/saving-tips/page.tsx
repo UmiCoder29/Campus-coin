@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Plus,
-  BookOpen,
   Edit2,
   Trash2,
   Megaphone,
@@ -12,8 +11,6 @@ import {
   X,
   RefreshCw,
   BellRing,
-  Lightbulb,
-  Sparkles,
 } from "lucide-react";
 
 interface AnnouncementTemplate {
@@ -203,30 +200,31 @@ export default function AdminSavingTipsCMSPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#141722] dark:text-white">
               Announcements & Saving Tips CMS
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] dark:text-[#FF7D42] border border-orange-200 dark:border-orange-500/20 uppercase tracking-widest">
               Broadcast Engine
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#767D8C] dark:text-[#8B96AA] mt-1">
             Author university announcements and money-saving templates. Active items surface in student feeds and push notifications.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={fetchAnnouncements}
             disabled={loading}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2.5 rounded-2xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] text-[#525866] dark:text-[#94A0B8] hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] hover:text-[#141722] dark:hover:text-white shadow-2xs transition-colors cursor-pointer"
+            title="Refresh announcements"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
 
           <button
             onClick={openAddModal}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#FF6422] hover:bg-[#E55519] text-xs font-bold text-white shadow-lg shadow-orange-500/20 transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Create Announcement / Tip</span>
@@ -236,47 +234,47 @@ export default function AdminSavingTipsCMSPage() {
 
       {/* Messages */}
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-2">
-          <Check className="h-4 w-4 shrink-0" />
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 shadow-xs">
+          <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs flex items-center justify-between shadow-xs">
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="p-1 hover:text-white">
+          <button onClick={() => setError(null)} className="p-1 hover:text-rose-900 dark:hover:text-white cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
       )}
 
       {/* ── Connection Banner ────────────────────────── */}
-      <div className="p-4 rounded-2xl bg-slate-900/90 border border-amber-500/20 flex items-start gap-3">
-        <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
+      <div className="p-5 rounded-3xl bg-white dark:bg-[#161B27] border border-orange-200/60 dark:border-orange-500/20 flex items-start gap-3.5 shadow-xs">
+        <div className="p-2.5 rounded-2xl bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] shrink-0">
           <Radio className="h-5 w-5" />
         </div>
-        <div className="text-xs leading-relaxed text-slate-300">
-          <span className="font-bold text-white block mb-0.5">
+        <div className="text-xs leading-relaxed text-[#767D8C] dark:text-[#8B96AA]">
+          <span className="font-bold text-[#141722] dark:text-white block mb-0.5">
             Bidirectional Student Connection
           </span>
-          Active templates surface immediately in the student <strong>Saving Tips</strong> tab.
-          Clicking <strong>Broadcast</strong> will instantly dispatch push notifications to all registered student accounts.
+          Active templates surface immediately in the student <strong className="text-[#141722] dark:text-[#F2F5F9]">Saving Tips</strong> tab.
+          Clicking <strong className="text-[#141722] dark:text-[#F2F5F9]">Broadcast</strong> will instantly dispatch push notifications to all registered student accounts.
         </div>
       </div>
 
       {/* ── Templates List ───────────────────────────── */}
       {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-28 rounded-2xl bg-slate-900 animate-pulse border border-slate-800" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-36 rounded-3xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] animate-pulse" />
           ))}
         </div>
       ) : announcements.length === 0 ? (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-12 text-center text-slate-400">
-          <Megaphone className="h-10 w-10 mx-auto mb-3 text-slate-600" />
-          <h3 className="font-bold text-white text-base">No announcements authored yet</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+        <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-12 text-center text-[#767D8C] dark:text-[#8B96AA] shadow-xs">
+          <Megaphone className="h-10 w-10 mx-auto mb-3 text-[#767D8C]/50 dark:text-[#8B96AA]/50" />
+          <h3 className="font-bold text-[#141722] dark:text-white text-base">No announcements authored yet</h3>
+          <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] mt-1 max-w-sm mx-auto">
             Create an announcement or saving tip template to broadcast financial advice or campus notices to students.
           </p>
         </div>
@@ -285,20 +283,20 @@ export default function AdminSavingTipsCMSPage() {
           {announcements.map((item) => (
             <div
               key={item.id}
-              className={`rounded-2xl border p-5 shadow-sm transition-all flex flex-col justify-between ${
+              className={`rounded-3xl border p-5 shadow-xs transition-all flex flex-col justify-between ${
                 item.isActive
-                  ? "border-slate-800 bg-slate-900/90 hover:border-slate-700"
-                  : "border-slate-800/40 bg-slate-950/40 opacity-70"
+                  ? "border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] hover:border-[#FF6422]/40 dark:hover:border-[#FF6422]/40"
+                  : "border-[#EFEAE1]/60 dark:border-[#222938]/60 bg-white/60 dark:bg-[#161B27]/40 opacity-70"
               }`}
             >
               <div>
-                <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex items-start justify-between gap-2 mb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] dark:text-[#FF7D42] border border-orange-200 dark:border-orange-500/20">
                       {item.category.replace(/_/g, " ")}
                     </span>
                     {item.broadcasted && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center gap-1">
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 flex items-center gap-1">
                         <BellRing className="h-2.5 w-2.5" />
                         Broadcasted
                       </span>
@@ -308,29 +306,29 @@ export default function AdminSavingTipsCMSPage() {
                   {/* Active Toggle Switch */}
                   <button
                     onClick={() => handleToggleActive(item)}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border transition-colors cursor-pointer ${
                       item.isActive
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
-                        : "bg-slate-800 text-slate-400 border-slate-700 hover:text-white"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-950/60"
+                        : "bg-[#FBF9F5] dark:bg-[#0E121B] text-[#767D8C] dark:text-[#8B96AA] border-[#EFEAE1] dark:border-[#222938] hover:text-[#141722] dark:hover:text-white"
                     }`}
                   >
                     <span
                       className={`w-1.5 h-1.5 rounded-full ${
-                        item.isActive ? "bg-emerald-400" : "bg-slate-500"
+                        item.isActive ? "bg-emerald-500" : "bg-slate-400"
                       }`}
                     />
                     <span>{item.isActive ? "Active" : "Inactive"}</span>
                   </button>
                 </div>
 
-                <h3 className="font-bold text-white text-sm mb-1.5">{item.title}</h3>
-                <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                <h3 className="font-bold text-[#141722] dark:text-white text-sm mb-1.5">{item.title}</h3>
+                <p className="text-xs text-[#525866] dark:text-[#94A0B8] leading-relaxed line-clamp-3">
                   {item.body}
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-[10px] text-slate-500">
+              <div className="mt-4 pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex items-center justify-between">
+                <span className="text-[10px] text-[#767D8C] dark:text-[#8B96AA]">
                   Updated {new Date(item.updatedAt).toLocaleDateString()}
                 </span>
 
@@ -340,7 +338,7 @@ export default function AdminSavingTipsCMSPage() {
                     onClick={() => handleBroadcast(item)}
                     disabled={broadcastingId === item.id}
                     title="Broadcast as notification to all students"
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-xs transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     <BellRing className="h-3 w-3" />
                     <span>{broadcastingId === item.id ? "Sending..." : "Broadcast"}</span>
@@ -348,7 +346,7 @@ export default function AdminSavingTipsCMSPage() {
 
                   <button
                     onClick={() => openEditModal(item)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] transition-colors cursor-pointer"
                     title="Edit template"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
@@ -356,7 +354,7 @@ export default function AdminSavingTipsCMSPage() {
 
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition-colors"
+                    className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                     title="Delete template"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -370,15 +368,15 @@ export default function AdminSavingTipsCMSPage() {
 
       {/* ── Add / Edit Modal ─────────────────────────── */}
       {modalMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl text-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-              <h3 className="font-bold text-base text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] rounded-3xl p-6 max-w-lg w-full shadow-2xl text-[#141722] dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EFEAE1] dark:border-[#222938] mb-4">
+              <h3 className="font-bold text-base text-[#141722] dark:text-white">
                 {modalMode === "ADD" ? "Create Announcement / Saving Tip" : "Edit Template"}
               </h3>
               <button
                 onClick={() => setModalMode(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -386,7 +384,7 @@ export default function AdminSavingTipsCMSPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1">
                   Title
                 </label>
                 <input
@@ -395,18 +393,18 @@ export default function AdminSavingTipsCMSPage() {
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="e.g. Free Campus Shuttle Pass Application Window"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white placeholder-[#767D8C] dark:placeholder-[#8B96AA] focus:outline-none focus:border-[#FF6422]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1">
                   Category Tag
                 </label>
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white focus:outline-none focus:border-[#FF6422]"
                 >
                   <option value="CAMPUS_HACK">Campus Hack</option>
                   <option value="STUDENT_DISCOUNT">Student Discount</option>
@@ -416,7 +414,7 @@ export default function AdminSavingTipsCMSPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1">
                   Body Content & Actionable Advice
                 </label>
                 <textarea
@@ -425,14 +423,14 @@ export default function AdminSavingTipsCMSPage() {
                   value={formBody}
                   onChange={(e) => setFormBody(e.target.value)}
                   placeholder="Describe the opportunity or alert details for students..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white placeholder-[#767D8C] dark:placeholder-[#8B96AA] focus:outline-none focus:border-[#FF6422] resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
                 <div>
-                  <div className="text-xs font-bold text-white">Active in Student Feed</div>
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-xs font-bold text-[#141722] dark:text-white">Active in Student Feed</div>
+                  <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA]">
                     Visible immediately in student Saving Tips & Announcements
                   </div>
                 </div>
@@ -440,17 +438,17 @@ export default function AdminSavingTipsCMSPage() {
                   type="checkbox"
                   checked={formIsActive}
                   onChange={(e) => setFormIsActive(e.target.checked)}
-                  className="w-4 h-4 rounded text-amber-500 focus:ring-0 bg-slate-900 border-slate-700 cursor-pointer"
+                  className="w-4 h-4 rounded text-[#FF6422] focus:ring-0 bg-white dark:bg-[#161B27] border-[#EFEAE1] dark:border-[#222938] cursor-pointer accent-[#FF6422]"
                 />
               </div>
 
               {modalMode === "ADD" && (
-                <div className="flex items-center justify-between p-3 rounded-xl bg-indigo-950/30 border border-indigo-900/50">
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-900/50">
                   <div>
-                    <div className="text-xs font-bold text-indigo-300">
+                    <div className="text-xs font-bold text-indigo-700 dark:text-indigo-300">
                       Broadcast Notification Now
                     </div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="text-[11px] text-indigo-600/70 dark:text-slate-400">
                       Dispatch immediate in-app notification to all active students
                     </div>
                   </div>
@@ -458,23 +456,23 @@ export default function AdminSavingTipsCMSPage() {
                     type="checkbox"
                     checked={formBroadcast}
                     onChange={(e) => setFormBroadcast(e.target.checked)}
-                    className="w-4 h-4 rounded text-indigo-600 focus:ring-0 bg-slate-900 border-slate-700 cursor-pointer"
+                    className="w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer accent-indigo-600"
                   />
                 </div>
               )}
 
-              <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setModalMode(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-2xl text-xs font-semibold text-[#525866] dark:text-[#94A0B8] hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 rounded-2xl bg-[#FF6422] hover:bg-[#E55519] text-xs font-bold text-white shadow-lg shadow-orange-500/20 disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {submitting ? "Saving..." : modalMode === "ADD" ? "Create Template" : "Save Changes"}
                 </button>

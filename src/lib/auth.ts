@@ -75,6 +75,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.email = user.email;
         token.role = user.role;
         token.status = (user as any).status;
         token.academicYear = user.academicYear;
@@ -84,12 +85,22 @@ export const authOptions: NextAuthOptions = {
         token.studentId = user.studentId;
         token.currency = user.currency;
         token.theme = user.theme;
+        token.picture = user.image;
+        token.budgetAlertThreshold = user.budgetAlertThreshold;
       }
 
       if (trigger === "update" && session) {
-        if (session.name) token.name = session.name;
-        if (session.theme) token.theme = session.theme;
-        if (session.currency) token.currency = session.currency;
+        if (session.name !== undefined) token.name = session.name;
+        if (session.email !== undefined) token.email = session.email;
+        if (session.theme !== undefined) token.theme = session.theme;
+        if (session.currency !== undefined) token.currency = session.currency;
+        if (session.academicYear !== undefined) token.academicYear = session.academicYear;
+        if (session.monthlyAllowance !== undefined) token.monthlyAllowance = session.monthlyAllowance;
+        if (session.savingsGoal !== undefined) token.savingsGoal = session.savingsGoal;
+        if (session.university !== undefined) token.university = session.university;
+        if (session.studentId !== undefined) token.studentId = session.studentId;
+        if (session.image !== undefined) token.picture = session.image;
+        if (session.budgetAlertThreshold !== undefined) token.budgetAlertThreshold = session.budgetAlertThreshold;
       }
 
       return token;
@@ -98,6 +109,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
+        session.user.email = (token.email as string) || session.user.email;
         session.user.role = token.role as string;
         (session.user as any).status = token.status as string;
         session.user.academicYear = token.academicYear as string | null;
@@ -107,6 +119,8 @@ export const authOptions: NextAuthOptions = {
         session.user.studentId = token.studentId as string | null;
         session.user.currency = (token.currency as string) ?? "USD";
         session.user.theme = (token.theme as string) ?? "SYSTEM";
+        session.user.budgetAlertThreshold = (token.budgetAlertThreshold as number | null) ?? 80;
+        if (token.picture) session.user.image = token.picture as string;
       }
       return session;
     },

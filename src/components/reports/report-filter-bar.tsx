@@ -8,8 +8,6 @@ import {
   ChevronRight,
   Filter,
   Check,
-  X,
-  Layers,
   RotateCcw,
 } from "lucide-react";
 import { CategoryIcon } from "@/components/ui/category-icon";

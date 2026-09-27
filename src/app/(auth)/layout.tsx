@@ -1,26 +1,30 @@
 import React from "react";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { Logo } from "@/components/ui/logo";
+import { AuthHeader } from "@/components/layout/auth-header";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#FBF9F5] dark:bg-[#0E121B] text-[#141722] dark:text-white transition-colors duration-200">
-      <header className="px-6 py-4 flex items-center justify-between border-b border-[#EFEAE1] dark:border-[#222938] bg-white/80 dark:bg-[#161B27]/80 backdrop-blur-md sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <Logo size="md" href="/login" />
-          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFEFE6] text-[#FF6422] dark:bg-[#FF6422]/20 dark:text-[#FF7D42] border border-[#FF6422]/20">
-            TechWiz 7
-          </span>
-        </div>
-        <ThemeToggle />
-      </header>
+    <div className="min-h-screen flex flex-col justify-between bg-[#FBF9F5] dark:bg-[#0A0D14] text-[#141722] dark:text-[#F2F5F9] transition-colors duration-200 selection:bg-[#FFE862] selection:text-black">
+      {/* ── Top Header ────────────────────── */}
+      <AuthHeader />
 
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-md">{children}</div>
+      {/* ── Main Content Container ────────── */}
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 pb-32 sm:pb-36">
+        <div className="w-full max-w-4xl mx-auto">{children}</div>
       </main>
 
-      <footer className="py-4 text-center text-xs text-[#767D8C] dark:text-[#8B96AA] border-t border-[#EFEAE1] dark:border-[#222938]">
-        Campus Coin &copy; 2026 &bull; Aptech TechWiz 7 NextGen BudgetBee
+      {/* ── Minimalist Clean Footer ──────── */}
+      <footer className="border-t border-[#EFEAE1]/70 dark:border-[#1E2536]/70 py-6 px-6 text-xs text-[#767D8C] dark:text-[#8B96AA]">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-[#141722] dark:text-white">CampusCoin</span>
+            <span className="text-[#8B96AA]/50">|</span>
+            <span>Collegiate Student Expense Ledger</span>
+          </div>
+
+          <div className="text-[11px] text-[#8B96AA]">
+            End-to-End Encrypted | Built for Modern Campus Life
+          </div>
+        </div>
       </footer>
     </div>
   );

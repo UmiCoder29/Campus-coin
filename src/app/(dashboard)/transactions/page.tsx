@@ -322,7 +322,7 @@ function TransactionsContent() {
             }`}
           >
             <Filter className="h-3.5 w-3.5" />
-            <span>Filters {hasActiveFilters && "•"}</span>
+            <span>Filters {hasActiveFilters && "(active)"}</span>
           </button>
         </div>
 
@@ -346,8 +346,8 @@ function TransactionsContent() {
 
             {/* Date Range: From */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                From Date
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                From date
               </label>
               <input
                 type="date"
@@ -362,8 +362,8 @@ function TransactionsContent() {
 
             {/* Date Range: To */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                To Date
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                To date
               </label>
               <input
                 type="date"
@@ -576,7 +576,7 @@ function TransactionsContent() {
                             day: "numeric",
                           })}
                         </span>
-                        <span>&bull;</span>
+                        <span>|</span>
                         <span>{tx.paymentMethod.replace("_", " ")}</span>
                         {tx.isRecurring && (
                           <span className="p-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">

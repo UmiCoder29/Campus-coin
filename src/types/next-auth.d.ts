@@ -15,6 +15,8 @@ declare module "next-auth" {
       studentId?: string | null;
       currency?: string;
       theme?: string;
+      budgetAlertThreshold?: number | null;
+      image?: string | null;
     } & DefaultSession["user"];
   }
 
@@ -28,6 +30,8 @@ declare module "next-auth" {
     studentId?: string | null;
     currency?: string;
     theme?: string;
+    budgetAlertThreshold?: number | null;
+    image?: string | null;
   }
 }
 
@@ -42,5 +46,7 @@ declare module "next-auth/jwt" {
     studentId?: string | null;
     currency?: string;
     theme?: string;
+    budgetAlertThreshold?: number | null;
+    image?: string | null;
   }
 }

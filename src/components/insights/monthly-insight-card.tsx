@@ -147,7 +147,7 @@ export function MonthlyInsightCard({
   };
 
   return (
-    <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs space-y-4 transition-all">
+    <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs fintech-card space-y-4 transition-all">
       {/* ── Card Header ──────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#F3EFE7] dark:border-[#222938]">
         <div className="flex items-center gap-3">

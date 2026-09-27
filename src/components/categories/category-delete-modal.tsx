@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AlertTriangle, Trash2, ArrowRight, X, Loader2 } from "lucide-react";
+import { AlertTriangle, Trash2, X, Loader2 } from "lucide-react";
 import { CategoryItem, CategoryPicker } from "@/components/categories/category-picker";
 
 interface CategoryDeleteModalProps {

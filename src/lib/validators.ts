@@ -108,3 +108,36 @@ export const budgetSchema = z.object({
   alertThreshold: z.coerce.number().min(1).max(100).default(80),
   rolloverUnused: z.boolean().default(false),
 });
+
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name cannot exceed 100 characters"),
+  email: z.string().trim().email("Please enter a valid campus email address"),
+  academicYear: z.string().min(1, "Academic year is required"),
+  university: z.string().max(100, "University name cannot exceed 100 characters").optional().nullable(),
+  studentId: z.string().max(50, "Student ID cannot exceed 50 characters").optional().nullable(),
+  currency: z.string().min(1).max(10).default("USD"),
+  monthlyAllowance: z.coerce.number().min(0, "Monthly allowance must be a positive number or 0"),
+  savingsGoal: z.coerce.number().min(0, "Savings target must be a positive number or 0"),
+  image: z.string().max(255).optional().nullable(),
+  theme: z.enum(["light", "dark", "system", "LIGHT", "DARK", "SYSTEM"]).default("system").optional(),
+  budgetAlertThreshold: z.coerce.number().min(50, "Alert threshold must be at least 50%").max(100, "Alert threshold cannot exceed 100%").optional(),
+  notifyBudgetAlerts: z.boolean().optional(),
+  notifyWeeklySummary: z.boolean().optional(),
+  notifySavingTips: z.boolean().optional(),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "New password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "New passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required to confirm account deletion"),
+});
+

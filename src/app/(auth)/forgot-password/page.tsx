@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
           </p>
 
           {devResetUrl && (
-            <div className="p-3.5 rounded-xl border border-indigo-100 dark:border-indigo-900/60 bg-indigo-50/50 dark:bg-indigo-950/40 text-left">
+            <div className="p-3.5 rounded-2xl border-l-4 border-l-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 border-y-0 border-r-0 text-left">
               <div className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1 flex items-center gap-1">
                 <span>Direct Dev/Evaluation Link:</span>
               </div>
@@ -95,8 +95,8 @@ export default function ForgotPasswordPage() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Campus Email
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Campus email
             </label>
             <input
               type="email"

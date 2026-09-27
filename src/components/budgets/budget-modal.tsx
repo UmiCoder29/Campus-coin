@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { X, DollarSign, Calendar, Loader2, AlertCircle } from "lucide-react";
-import { CategoryPicker, CategoryItem } from "@/components/categories/category-picker";
+import { CategoryPicker } from "@/components/categories/category-picker";
 import { BudgetVsActualItem } from "@/lib/budget-service";
 
 interface BudgetModalProps {
@@ -137,7 +137,7 @@ export function BudgetModal({
           <div>
             {isEditing ? (
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Category
                 </label>
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 font-semibold text-sm text-slate-900 dark:text-white">
@@ -160,8 +160,8 @@ export function BudgetModal({
 
           {/* Budget Limit Amount */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Monthly Limit Amount ($) <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Monthly limit amount ($) <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <DollarSign className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
@@ -186,8 +186,8 @@ export function BudgetModal({
 
           {/* Target Month */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Budget Month
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Budget month
             </label>
             <div className="relative">
               <Calendar className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />

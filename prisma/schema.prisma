@@ -105,6 +105,9 @@ model User {
   theme                 String         @default("SYSTEM")
   monthlyIncomeEstimate Decimal?       @map("monthly_income_estimate") @db.Decimal(12, 2)
   budgetAlertThreshold  Int            @default(80) @map("budget_alert_threshold")
+  notifyBudgetAlerts    Boolean        @default(true) @map("notify_budget_alerts")
+  notifyWeeklySummary   Boolean        @default(true) @map("notify_weekly_summary")
+  notifySavingTips      Boolean        @default(true) @map("notify_saving_tips")
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
 

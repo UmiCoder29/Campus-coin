@@ -157,7 +157,6 @@ export async function evaluateRuleBasedTips(userId: string, targetMonth?: string
     dayOfMonth = 1;
   }
   const daysRemaining = Math.max(1, lastDayOfMonth - dayOfMonth);
-  const monthProgressRatio = dayOfMonth / lastDayOfMonth;
 
   const candidates: EvaluatedTipCandidate[] = [];
 

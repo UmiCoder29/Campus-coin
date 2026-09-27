@@ -139,8 +139,8 @@ export function CategoryModal({
 
           {/* Type Toggle */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Category Type
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Category type
             </label>
             <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl">
               <button
@@ -183,8 +183,8 @@ export function CategoryModal({
 
           {/* Category Name */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Category Name <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Category name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -222,8 +222,8 @@ export function CategoryModal({
 
           {/* Color Palette */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Theme Color
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Theme color
             </label>
             <div className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((c) => (
@@ -242,8 +242,8 @@ export function CategoryModal({
 
           {/* Icon Selection */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-              Category Icon
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+              Category icon
             </label>
             <div className="grid grid-cols-6 gap-2 max-h-36 overflow-y-auto p-1.5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40">
               {AVAILABLE_ICON_NAMES.map((iconName) => (

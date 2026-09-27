@@ -4,15 +4,11 @@ import React, { useState, useEffect } from "react";
 import {
   Clock,
   History,
-  ArrowUpRight,
-  ArrowDownRight,
   Eye,
   FileSpreadsheet,
   Mail,
   Edit2,
   PlusCircle,
-  Tag,
-  ExternalLink,
 } from "lucide-react";
 import { CategoryIcon } from "@/components/ui/category-icon";
 import Link from "next/link";
@@ -82,7 +78,7 @@ export function RecentActivityWidget() {
     return `${diffDays}d ago`;
   };
 
-  const getActionIcon = (action: string, entityType: string) => {
+  const getActionIcon = (action: string, _entityType?: string) => {
     if (action === "EMAIL") return <Mail className="h-3.5 w-3.5 text-indigo-500" />;
     if (action === "IMPORT") return <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" />;
     if (action === "VIEW") return <Eye className="h-3.5 w-3.5 text-slate-400" />;
@@ -92,7 +88,7 @@ export function RecentActivityWidget() {
   };
 
   return (
-    <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs space-y-4">
+    <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-6 shadow-xs fintech-card space-y-4">
       {/* ── Widget Header ────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -165,7 +161,7 @@ export function RecentActivityWidget() {
                     </p>
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
                       <span>{tx.category?.name || "Campus"}</span>
-                      <span>&bull;</span>
+                      <span>|</span>
                       <span>
                         {tx.lastViewedAt
                           ? `Viewed ${formatRelativeTime(tx.lastViewedAt)}`
@@ -187,48 +183,47 @@ export function RecentActivityWidget() {
                   </div>
                   <Link
                     href={`/transactions?search=${encodeURIComponent(tx.description)}`}
-                    className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-0.5 mt-0.5"
+                    className="text-[11px] font-medium text-[#FF722B] dark:text-[#FFA64D] hover:underline inline-block mt-0.5"
                   >
-                    <span>View</span>
-                    <ExternalLink className="h-2.5 w-2.5" />
+                    View
                   </Link>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="py-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+          <div className="py-6 text-center text-xs text-[#767D8C] dark:text-[#8B96AA] border border-dashed border-[#EFEAE1] dark:border-[#222938] rounded-2xl">
             No recently viewed transactions yet. Click into transactions on the ledger to bookmark them in your activity trail.
           </div>
         )
       ) : activities.length > 0 ? (
-        <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+        <div className="divide-y divide-[#F3EFE7] dark:divide-[#222938]">
           {activities.map((act) => (
             <div
               key={act.id}
               className="py-2.5 flex items-center justify-between gap-3 text-xs px-1.5"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-xl bg-[#F3EFE7] dark:bg-[#1E2536] flex items-center justify-center shrink-0">
                   {getActionIcon(act.action, act.entityType)}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                  <p className="font-semibold text-[#141722] dark:text-white truncate">
                     {act.title}
                   </p>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono">
-                    {act.action} &bull; {act.entityType}
+                  <span className="text-[11px] text-[#767D8C] dark:text-[#8B96AA] font-mono">
+                    {act.action.toLowerCase()} / {act.entityType.toLowerCase()}
                   </span>
                 </div>
               </div>
-              <span className="text-[10px] text-slate-400 shrink-0 font-medium">
+              <span className="text-[11px] text-[#767D8C] dark:text-[#8B96AA] shrink-0 font-medium">
                 {formatRelativeTime(act.createdAt)}
               </span>
             </div>
           ))}
         </div>
       ) : (
-        <div className="py-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+        <div className="py-6 text-center text-xs text-[#767D8C] dark:text-[#8B96AA] border border-dashed border-[#EFEAE1] dark:border-[#222938] rounded-2xl">
           No audit activity logged yet.
         </div>
       )}

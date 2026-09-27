@@ -186,10 +186,6 @@ export default function SavingTipsPage() {
       {/* ── Page Header ──────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20 mb-1.5">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Deterministic Financial Rules Engine &bull; Zero AI Overhead</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Personalized Saving Tips & Bookmarks
           </h1>
@@ -356,7 +352,7 @@ export default function SavingTipsPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Unified Collection &bull; Pinned Tips & AI Insights
+                  Unified Collection | Pinned Tips & AI Insights
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Quick access to all actionable advice, student strategies, and Gemini narratives you&apos;ve bookmarked.
@@ -426,10 +422,9 @@ export default function SavingTipsPage() {
                       </span>
                       <Link
                         href={`/reports?month=${insight.month || ""}`}
-                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
                       >
-                        <span>View In Reports</span>
-                        <ArrowRight className="h-3 w-3" />
+                        <span>View in reports</span>
                       </Link>
                     </div>
                   </div>

@@ -3,16 +3,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Plus,
-  Tags,
   Edit2,
   Trash2,
   AlertTriangle,
   Check,
   X,
   RefreshCw,
-  FolderTree,
-  ShieldCheck,
-  ArrowRight,
 } from "lucide-react";
 
 interface DefaultCategory {
@@ -217,30 +213,31 @@ export default function AdminCategoriesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#141722] dark:text-white">
               System Default Categories
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] dark:text-[#FF7D42] border border-orange-200 dark:border-orange-500/20 uppercase tracking-widest">
               Live Seed Taxonomy
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#767D8C] dark:text-[#8B96AA] mt-1">
             Global standard categories available to all student accounts with deletion guards & propagation
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={fetchCategories}
             disabled={loading}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2.5 rounded-2xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] text-[#525866] dark:text-[#94A0B8] hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] hover:text-[#141722] dark:hover:text-white shadow-2xs transition-colors cursor-pointer"
+            title="Refresh categories"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
 
           <button
             onClick={openAddModal}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#FF6422] hover:bg-[#E55519] text-xs font-bold text-white shadow-lg shadow-orange-500/20 transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Add Default Category</span>
@@ -250,17 +247,17 @@ export default function AdminCategoriesPage() {
 
       {/* Messages */}
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs flex items-center justify-between shadow-xs">
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="p-1 hover:text-white">
+          <button onClick={() => setError(null)} className="p-1 hover:text-rose-900 dark:hover:text-white cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
       )}
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-2">
-          <Check className="h-4 w-4 shrink-0" />
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 shadow-xs">
+          <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{successMsg}</span>
         </div>
       )}
@@ -268,64 +265,66 @@ export default function AdminCategoriesPage() {
       {/* ── Section: Expense Categories ──────────────── */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#767D8C] dark:text-[#8B96AA]">
             Default Expense Categories ({expenseCategories.length})
           </h2>
-          <span className="text-xs text-slate-500">Auto-assigned to student expense ledgers</span>
+          <span className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
+            Auto-assigned to student expense ledgers
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {expenseCategories.map((c) => (
             <div
               key={c.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4.5 shadow-sm hover:border-slate-700 transition-all flex flex-col justify-between"
+              className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-5 shadow-xs hover:border-[#FF6422]/40 dark:hover:border-[#FF6422]/40 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5">
                     <div
-                      className="w-4 h-4 rounded-full shadow-sm"
+                      className="w-4 h-4 rounded-full shadow-xs"
                       style={{ backgroundColor: c.color }}
                     />
-                    <h3 className="font-bold text-white text-sm">{c.name}</h3>
+                    <h3 className="font-bold text-[#141722] dark:text-white text-sm">{c.name}</h3>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-950/60 text-rose-400 border border-rose-800/50">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
                     EXPENSE
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs text-slate-400">
+                <div className="space-y-1.5 text-xs text-[#767D8C] dark:text-[#8B96AA]">
                   <div className="flex items-center justify-between">
                     <span>Logged Transactions:</span>
-                    <span className="font-semibold text-slate-200">
+                    <span className="font-semibold text-[#141722] dark:text-[#F2F5F9]">
                       {c.transactionCount}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Active Budgets:</span>
-                    <span className="font-semibold text-slate-200">
+                    <span className="font-semibold text-[#141722] dark:text-[#F2F5F9]">
                       {c.budgetCount}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500">
-                  Icon: <code className="text-amber-400">{c.icon}</code>
+              <div className="mt-4 pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex items-center justify-between">
+                <span className="text-[11px] text-[#767D8C] dark:text-[#8B96AA]">
+                  Icon: <code className="text-[#FF6422] font-semibold">{c.icon}</code>
                 </span>
 
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => openEditModal(c)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] transition-colors cursor-pointer"
                     title="Edit category"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => openDeleteModal(c)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition-colors"
+                    className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                     title="Delete category"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -340,58 +339,60 @@ export default function AdminCategoriesPage() {
       {/* ── Section: Income Categories ───────────────── */}
       <div className="space-y-3 pt-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#767D8C] dark:text-[#8B96AA]">
             Default Income Categories ({incomeCategories.length})
           </h2>
-          <span className="text-xs text-slate-500">Auto-assigned to student income ledgers</span>
+          <span className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
+            Auto-assigned to student income ledgers
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {incomeCategories.map((c) => (
             <div
               key={c.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4.5 shadow-sm hover:border-slate-700 transition-all flex flex-col justify-between"
+              className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] p-5 shadow-xs hover:border-[#FF6422]/40 dark:hover:border-[#FF6422]/40 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5">
                     <div
-                      className="w-4 h-4 rounded-full shadow-sm"
+                      className="w-4 h-4 rounded-full shadow-xs"
                       style={{ backgroundColor: c.color }}
                     />
-                    <h3 className="font-bold text-white text-sm">{c.name}</h3>
+                    <h3 className="font-bold text-[#141722] dark:text-white text-sm">{c.name}</h3>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/50">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
                     INCOME
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs text-slate-400">
+                <div className="space-y-1.5 text-xs text-[#767D8C] dark:text-[#8B96AA]">
                   <div className="flex items-center justify-between">
                     <span>Logged Deposits:</span>
-                    <span className="font-semibold text-slate-200">
+                    <span className="font-semibold text-[#141722] dark:text-[#F2F5F9]">
                       {c.transactionCount}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500">
-                  Icon: <code className="text-amber-400">{c.icon}</code>
+              <div className="mt-4 pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex items-center justify-between">
+                <span className="text-[11px] text-[#767D8C] dark:text-[#8B96AA]">
+                  Icon: <code className="text-[#FF6422] font-semibold">{c.icon}</code>
                 </span>
 
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => openEditModal(c)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] transition-colors cursor-pointer"
                     title="Edit category"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => openDeleteModal(c)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition-colors"
+                    className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                     title="Delete category"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -405,15 +406,15 @@ export default function AdminCategoriesPage() {
 
       {/* ── Add / Edit Modal ─────────────────────────── */}
       {modalMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl text-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="font-bold text-base text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] rounded-3xl p-6 max-w-md w-full shadow-2xl text-[#141722] dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EFEAE1] dark:border-[#222938]">
+              <h3 className="font-bold text-base text-[#141722] dark:text-white">
                 {modalMode === "ADD" ? "Add Default Category" : `Edit Category: ${selectedCat?.name}`}
               </h3>
               <button
                 onClick={() => setModalMode(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -421,7 +422,7 @@ export default function AdminCategoriesPage() {
 
             <form onSubmit={handleSubmitForm} className="space-y-4 mt-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1">
                   Category Name
                 </label>
                 <input
@@ -430,23 +431,23 @@ export default function AdminCategoriesPage() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="e.g. Lab Supplies"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white placeholder-[#767D8C] dark:placeholder-[#8B96AA] focus:outline-none focus:border-[#FF6422]"
                 />
               </div>
 
               {modalMode === "ADD" && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1">
                     Classification
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setFormType("EXPENSE")}
-                      className={`py-2 text-xs font-bold rounded-xl border transition-colors ${
+                      className={`py-2 text-xs font-bold rounded-2xl border transition-colors cursor-pointer ${
                         formType === "EXPENSE"
-                          ? "bg-rose-500/20 text-rose-300 border-rose-500"
-                          : "bg-slate-950 text-slate-400 border-slate-800"
+                          ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-700"
+                          : "bg-[#FBF9F5] dark:bg-[#0E121B] text-[#767D8C] dark:text-[#8B96AA] border-[#EFEAE1] dark:border-[#222938]"
                       }`}
                     >
                       Expense
@@ -454,10 +455,10 @@ export default function AdminCategoriesPage() {
                     <button
                       type="button"
                       onClick={() => setFormType("INCOME")}
-                      className={`py-2 text-xs font-bold rounded-xl border transition-colors ${
+                      className={`py-2 text-xs font-bold rounded-2xl border transition-colors cursor-pointer ${
                         formType === "INCOME"
-                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500"
-                          : "bg-slate-950 text-slate-400 border-slate-800"
+                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700"
+                          : "bg-[#FBF9F5] dark:bg-[#0E121B] text-[#767D8C] dark:text-[#8B96AA] border-[#EFEAE1] dark:border-[#222938]"
                       }`}
                     >
                       Income
@@ -468,7 +469,7 @@ export default function AdminCategoriesPage() {
 
               {/* Color Selector */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1.5">
                   Color Tag
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -477,8 +478,8 @@ export default function AdminCategoriesPage() {
                       key={c}
                       type="button"
                       onClick={() => setFormColor(c)}
-                      className={`w-7 h-7 rounded-full transition-transform ${
-                        formColor === c ? "ring-2 ring-white scale-110" : "opacity-80 hover:opacity-100"
+                      className={`w-7 h-7 rounded-full transition-transform cursor-pointer ${
+                        formColor === c ? "ring-2 ring-[#FF6422] scale-110 shadow-sm" : "opacity-80 hover:opacity-100"
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -488,7 +489,7 @@ export default function AdminCategoriesPage() {
 
               {/* Icon Selector */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1.5">
                   Icon Identifier
                 </label>
                 <div className="grid grid-cols-4 gap-1.5">
@@ -497,10 +498,10 @@ export default function AdminCategoriesPage() {
                       key={iconName}
                       type="button"
                       onClick={() => setFormIcon(iconName)}
-                      className={`py-1.5 px-2 text-[11px] font-medium rounded-lg border text-center transition-colors truncate ${
+                      className={`py-1.5 px-2 text-[11px] font-medium rounded-xl border text-center transition-colors truncate cursor-pointer ${
                         formIcon === iconName
-                          ? "bg-amber-500/20 text-amber-300 border-amber-500"
-                          : "bg-slate-950 text-slate-400 border-slate-800 hover:text-white"
+                          ? "bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] dark:text-[#FF7D42] border-[#FF6422]/40"
+                          : "bg-[#FBF9F5] dark:bg-[#0E121B] text-[#767D8C] dark:text-[#8B96AA] border-[#EFEAE1] dark:border-[#222938] hover:text-[#141722] dark:hover:text-white"
                       }`}
                     >
                       {iconName}
@@ -509,18 +510,18 @@ export default function AdminCategoriesPage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setModalMode(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-2xl text-xs font-semibold text-[#525866] dark:text-[#94A0B8] hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 rounded-2xl bg-[#FF6422] hover:bg-[#E55519] text-xs font-bold text-white shadow-lg shadow-orange-500/20 disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {submitting ? "Saving..." : modalMode === "ADD" ? "Create Category" : "Save Changes"}
                 </button>
@@ -532,20 +533,20 @@ export default function AdminCategoriesPage() {
 
       {/* ── Delete with Confirm & Reassign Modal ───────── */}
       {deleteModalCat && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-rose-900/60 rounded-3xl p-6 max-w-md w-full shadow-2xl text-slate-100">
-            <div className="flex items-center gap-3 text-rose-400 mb-3">
-              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-[#161B27] border border-rose-200 dark:border-rose-900/50 rounded-3xl p-6 max-w-md w-full shadow-2xl text-[#141722] dark:text-white">
+            <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400 mb-3">
+              <div className="p-2.5 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20">
                 <AlertTriangle className="h-5 w-5" />
               </div>
-              <h3 className="font-bold text-base text-white">
+              <h3 className="font-bold text-base text-[#141722] dark:text-white">
                 Delete Category: {deleteModalCat.name}
               </h3>
             </div>
 
             {deleteModalCat.isInUse ? (
               <div className="space-y-4">
-                <div className="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-800/50 text-xs text-rose-300 leading-relaxed">
+                <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-xs text-rose-700 dark:text-rose-300 leading-relaxed">
                   <p className="font-bold mb-1">Active Ledger Guard Warning</p>
                   This default category is actively referenced by{" "}
                   <strong>{deleteModalCat.transactionCount} transactions</strong> and{" "}
@@ -554,13 +555,13 @@ export default function AdminCategoriesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-[#525866] dark:text-[#94A0B8] mb-1.5">
                     Select Replacement Category ({deleteModalCat.type})
                   </label>
                   <select
                     value={reassignToId}
                     onChange={(e) => setReassignToId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white focus:outline-none focus:border-[#FF6422]"
                   >
                     {categories
                       .filter(
@@ -576,16 +577,16 @@ export default function AdminCategoriesPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+              <p className="text-xs text-[#767D8C] dark:text-[#8B96AA] mb-4 leading-relaxed">
                 This category has 0 associated transactions or budgets and can be safely deleted immediately.
               </p>
             )}
 
-            <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-end gap-2">
+            <div className="pt-4 mt-4 border-t border-[#EFEAE1] dark:border-[#222938] flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setDeleteModalCat(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                className="px-4 py-2 rounded-2xl text-xs font-semibold text-[#525866] dark:text-[#94A0B8] hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] cursor-pointer"
               >
                 Cancel
               </button>
@@ -593,7 +594,7 @@ export default function AdminCategoriesPage() {
                 type="button"
                 onClick={handleExecuteDelete}
                 disabled={deleting || (deleteModalCat.isInUse && !reassignToId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white shadow-md shadow-rose-600/20 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-2xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white shadow-md shadow-rose-600/20 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 {deleting
                   ? "Processing..."

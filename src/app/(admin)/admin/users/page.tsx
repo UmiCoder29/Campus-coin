@@ -10,16 +10,11 @@ import {
   KeyRound,
   Eye,
   RefreshCw,
-  MoreVertical,
   Check,
   X,
-  AlertCircle,
   Copy,
-  Receipt,
-  PiggyBank,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
 } from "lucide-react";
 
 interface AdminUserItem {
@@ -58,24 +53,13 @@ interface UserActivityDetail {
     totalIncome: number;
     netBalance: number;
     activeBudgetsCount: number;
-    notificationCount: number;
   };
   recentTransactions: Array<{
     id: string;
     amount: number;
     type: string;
     description: string;
-    merchant?: string | null;
     date: string;
-    paymentMethod: string;
-    categoryName: string;
-    categoryColor: string;
-  }>;
-  budgets: Array<{
-    id: string;
-    amount: number;
-    month: string;
-    period: string;
     categoryName: string;
     categoryColor: string;
   }>;
@@ -84,29 +68,32 @@ interface UserActivityDetail {
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUserItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Activity modal
+  // Filters
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  // Notifications
+  const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Detail Modal
   const [activityModalUser, setActivityModalUser] = useState<UserActivityDetail | null>(null);
   const [activityLoading, setActivityLoading] = useState(false);
 
-  // Password reset modal
+  // Password Reset Modal
   const [resetModalData, setResetModalData] = useState<{
     email: string;
     name: string;
-    resetToken: string;
-    resetLink: string;
-    tempPassword?: string | null;
+    resetToken?: string;
+    resetLink?: string;
+    tempPassword?: string;
   } | null>(null);
-
   const [copiedLink, setCopiedLink] = useState(false);
-  const [actionMsg, setActionMsg] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -185,7 +172,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  // View user activity summary
+  // View read-only student activity
   const handleViewActivity = async (userId: string) => {
     try {
       setActivityLoading(true);
@@ -194,7 +181,7 @@ export default function AdminUsersPage() {
       if (json.success) {
         setActivityModalUser(json.data);
       } else {
-        throw new Error(json.error || "Failed to fetch activity");
+        throw new Error(json.error || "Failed to load activity");
       }
     } catch (err: any) {
       setErrorMsg(err.message || "Could not load user activity summary");
@@ -215,14 +202,14 @@ export default function AdminUsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#141722] dark:text-white">
               Student & User Governance
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] dark:text-[#FF7D42] border border-orange-200 dark:border-orange-500/20 uppercase tracking-widest">
               {totalCount} Total Accounts
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#767D8C] dark:text-[#8B96AA] mt-1">
             Search student accounts, view read-only financial activity, manage login status, and trigger password recovery
           </p>
         </div>
@@ -230,7 +217,7 @@ export default function AdminUsersPage() {
         <button
           onClick={fetchUsers}
           disabled={loading}
-          className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+          className="p-2.5 rounded-2xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white shadow-2xs transition-colors cursor-pointer"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
         </button>
@@ -238,16 +225,16 @@ export default function AdminUsersPage() {
 
       {/* Messages */}
       {actionMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-2">
-          <Check className="h-4 w-4 shrink-0" />
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2 shadow-xs">
+          <Check className="h-4 w-4 shrink-0 text-emerald-500" />
           <span>{actionMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 text-xs flex items-center justify-between shadow-xs">
           <span>{errorMsg}</span>
-          <button onClick={() => setErrorMsg(null)} className="p-1 hover:text-white">
+          <button onClick={() => setErrorMsg(null)} className="p-1 hover:text-rose-900 dark:hover:text-white cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -256,7 +243,7 @@ export default function AdminUsersPage() {
       {/* ── Search & Filter Controls ─────────────────── */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#767D8C] dark:text-[#8B96AA]" />
           <input
             type="text"
             placeholder="Search by name, email, university or student ID..."
@@ -265,7 +252,7 @@ export default function AdminUsersPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white placeholder-[#767D8C] dark:placeholder-[#8B96AA] focus:outline-none focus:border-[#FF6422] dark:focus:border-[#FF7D42] shadow-2xs transition-all"
           />
         </div>
 
@@ -276,7 +263,7 @@ export default function AdminUsersPage() {
               setRoleFilter(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-amber-500"
+            className="px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] text-xs font-medium text-[#141722] dark:text-white focus:outline-none focus:border-[#FF6422] shadow-2xs"
           >
             <option value="ALL">All Roles</option>
             <option value="STUDENT">Students Only</option>
@@ -289,7 +276,7 @@ export default function AdminUsersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-amber-500"
+            className="px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] text-xs font-medium text-[#141722] dark:text-white focus:outline-none focus:border-[#FF6422] shadow-2xs"
           >
             <option value="ALL">All Statuses</option>
             <option value="ACTIVE">Active Accounts</option>
@@ -299,10 +286,10 @@ export default function AdminUsersPage() {
       </div>
 
       {/* ── Users Table ──────────────────────────────── */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/90 overflow-hidden shadow-sm">
+      <div className="rounded-3xl border border-[#EFEAE1] dark:border-[#222938] bg-white dark:bg-[#161B27] overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/60 uppercase tracking-wider text-slate-400 font-bold">
+            <thead className="border-b border-[#EFEAE1] dark:border-[#222938] bg-[#FBF9F5] dark:bg-[#0E121B] uppercase tracking-wider text-[#767D8C] dark:text-[#8B96AA] font-bold">
               <tr>
                 <th className="py-3.5 px-4">Student / User</th>
                 <th className="py-3.5 px-4">University & ID</th>
@@ -312,30 +299,30 @@ export default function AdminUsersPage() {
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80">
+            <tbody className="divide-y divide-[#EFEAE1] dark:divide-[#222938]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-500">
+                  <td colSpan={6} className="py-8 text-center text-[#767D8C] dark:text-[#8B96AA]">
                     Loading accounts...
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-500">
+                  <td colSpan={6} className="py-8 text-center text-[#767D8C] dark:text-[#8B96AA]">
                     No matching accounts found.
                   </td>
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={u.id} className="hover:bg-[#F3EFE7]/50 dark:hover:bg-[#1E2536]/50 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-white text-xs">{u.name}</div>
-                      <div className="text-[11px] text-slate-400">{u.email}</div>
+                      <div className="font-bold text-[#141722] dark:text-white text-xs">{u.name}</div>
+                      <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA]">{u.email}</div>
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-[#525866] dark:text-[#94A0B8]">
                       <div>{u.university || "—"}</div>
-                      <div className="text-[11px] text-slate-500 font-mono">
+                      <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA] font-mono">
                         {u.studentId || "No ID"}
                       </div>
                     </td>
@@ -344,8 +331,8 @@ export default function AdminUsersPage() {
                       <span
                         className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                           u.role === "ADMIN"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                            : "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"
+                            ? "bg-[#FFEFE6] dark:bg-[#FF6422]/15 text-[#FF6422] dark:text-[#FF7D42] border-orange-200 dark:border-orange-500/20"
+                            : "bg-[#EEF2FF] dark:bg-[#4F46E5]/20 text-[#4F46E5] dark:text-[#818CF8] border-indigo-200 dark:border-indigo-500/20"
                         }`}
                       >
                         {u.role === "ADMIN" ? (
@@ -357,12 +344,12 @@ export default function AdminUsersPage() {
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-300">
-                      <div className="font-semibold">
+                    <td className="py-3.5 px-4 text-[#525866] dark:text-[#94A0B8]">
+                      <div className="font-semibold text-[#141722] dark:text-white">
                         {u.transactionCount} transactions
                       </div>
-                      <div className="text-[11px] text-slate-500">
-                        {u.budgetCount} budgets &bull; Joined {new Date(u.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
+                      <div className="text-[11px] text-[#767D8C] dark:text-[#8B96AA]">
+                        {u.budgetCount} budgets | Joined {new Date(u.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
                       </div>
                     </td>
 
@@ -370,15 +357,11 @@ export default function AdminUsersPage() {
                       <span
                         className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${
                           u.status === "ACTIVE"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40"
+                            : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40"
                         }`}
                       >
-                        {u.status === "ACTIVE" ? (
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        ) : (
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                        )}
+                        <span className={`w-1.5 h-1.5 rounded-full ${u.status === "ACTIVE" ? "bg-emerald-500" : "bg-rose-500"}`} />
                         <span>{u.status}</span>
                       </span>
                     </td>
@@ -389,7 +372,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => handleViewActivity(u.id)}
                           title="View activity summary"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white hover:bg-[#F3EFE7] dark:hover:bg-[#1E2536] transition-colors cursor-pointer"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -398,7 +381,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => handleTriggerReset(u)}
                           title="Trigger password reset"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-amber-950/40 transition-colors"
+                          className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#FF6422] dark:hover:text-[#FF7D42] hover:bg-[#FFEFE6] dark:hover:bg-[#FF6422]/10 transition-colors cursor-pointer"
                         >
                           <KeyRound className="h-4 w-4" />
                         </button>
@@ -407,10 +390,10 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => handleToggleStatus(u)}
                           title={u.status === "ACTIVE" ? "Deactivate account" : "Reactivate account"}
-                          className={`p-1.5 rounded-lg transition-colors ${
+                          className={`p-1.5 rounded-xl transition-colors cursor-pointer ${
                             u.status === "ACTIVE"
-                              ? "text-slate-400 hover:text-rose-400 hover:bg-rose-950/40"
-                              : "text-rose-400 hover:text-emerald-400 hover:bg-emerald-950/40"
+                              ? "text-[#767D8C] dark:text-[#8B96AA] hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                              : "text-rose-600 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
                           }`}
                         >
                           {u.status === "ACTIVE" ? (
@@ -429,7 +412,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Pagination */}
-        <div className="p-3.5 px-4 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between text-xs text-slate-400">
+        <div className="p-3.5 px-4 border-t border-[#EFEAE1] dark:border-[#222938] bg-[#FBF9F5] dark:bg-[#0E121B] flex items-center justify-between text-xs text-[#767D8C] dark:text-[#8B96AA]">
           <span>
             Page {page} of {totalPages} ({totalCount} users)
           </span>
@@ -438,14 +421,14 @@ export default function AdminUsersPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="p-1 rounded-lg border border-slate-800 text-slate-400 hover:text-white disabled:opacity-30"
+              className="p-1.5 rounded-xl border border-[#EFEAE1] dark:border-[#222938] text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white disabled:opacity-30 cursor-pointer"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="p-1 rounded-lg border border-slate-800 text-slate-400 hover:text-white disabled:opacity-30"
+              className="p-1.5 rounded-xl border border-[#EFEAE1] dark:border-[#222938] text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white disabled:opacity-30 cursor-pointer"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -455,20 +438,20 @@ export default function AdminUsersPage() {
 
       {/* ── Modal: User Read-Only Activity Summary ───── */}
       {activityModalUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl text-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] rounded-3xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl text-[#141722] dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EFEAE1] dark:border-[#222938] mb-4">
               <div>
-                <h3 className="font-bold text-base text-white">
+                <h3 className="font-bold text-base text-[#141722] dark:text-white">
                   Activity Summary: {activityModalUser.user.name}
                 </h3>
-                <p className="text-xs text-slate-400">
-                  {activityModalUser.user.email} &bull; {activityModalUser.user.university || "Campus User"}
+                <p className="text-xs text-[#767D8C] dark:text-[#8B96AA]">
+                  {activityModalUser.user.email} | {activityModalUser.user.university || "Campus User"}
                 </p>
               </div>
               <button
                 onClick={() => setActivityModalUser(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1.5 rounded-xl text-[#767D8C] dark:text-[#8B96AA] hover:text-[#141722] dark:hover:text-white cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -476,21 +459,21 @@ export default function AdminUsersPage() {
 
             {/* Quick Stat Highlights */}
             <div className="grid grid-cols-3 gap-3 mb-5">
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Total Spent</span>
-                <div className="text-base font-bold text-rose-400 mt-0.5">
+              <div className="p-3.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
+                <span className="text-[10px] uppercase font-bold text-[#767D8C] dark:text-[#8B96AA]">Total Spent</span>
+                <div className="text-base font-black text-rose-500 mt-0.5">
                   ${activityModalUser.stats.totalExpense.toFixed(2)}
                 </div>
               </div>
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Total Income</span>
-                <div className="text-base font-bold text-emerald-400 mt-0.5">
+              <div className="p-3.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
+                <span className="text-[10px] uppercase font-bold text-[#767D8C] dark:text-[#8B96AA]">Total Income</span>
+                <div className="text-base font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
                   ${activityModalUser.stats.totalIncome.toFixed(2)}
                 </div>
               </div>
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Net Ledger</span>
-                <div className="text-base font-bold text-white mt-0.5">
+              <div className="p-3.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938]">
+                <span className="text-[10px] uppercase font-bold text-[#767D8C] dark:text-[#8B96AA]">Net Ledger</span>
+                <div className="text-base font-black text-[#141722] dark:text-white mt-0.5">
                   ${activityModalUser.stats.netBalance.toFixed(2)}
                 </div>
               </div>
@@ -498,12 +481,12 @@ export default function AdminUsersPage() {
 
             {/* Recent Transactions List */}
             <div className="space-y-2 mb-5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#767D8C] dark:text-[#8B96AA]">
                 Recent Transactions (Last 10)
               </h4>
-              <div className="rounded-xl border border-slate-800 overflow-hidden">
+              <div className="rounded-2xl border border-[#EFEAE1] dark:border-[#222938] overflow-hidden">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-500 font-semibold border-b border-slate-800">
+                  <thead className="bg-[#FBF9F5] dark:bg-[#0E121B] text-[#767D8C] dark:text-[#8B96AA] font-bold border-b border-[#EFEAE1] dark:border-[#222938]">
                     <tr>
                       <th className="p-2.5">Date</th>
                       <th className="p-2.5">Description</th>
@@ -511,34 +494,34 @@ export default function AdminUsersPage() {
                       <th className="p-2.5 text-right">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
+                  <tbody className="divide-y divide-[#EFEAE1] dark:divide-[#222938] bg-white dark:bg-[#161B27]">
                     {activityModalUser.recentTransactions.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-4 text-center text-slate-500">
+                        <td colSpan={4} className="p-4 text-center text-[#767D8C] dark:text-[#8B96AA]">
                           No transactions recorded yet.
                         </td>
                       </tr>
                     ) : (
                       activityModalUser.recentTransactions.map((tx) => (
                         <tr key={tx.id}>
-                          <td className="p-2.5 text-slate-400 whitespace-nowrap">
+                          <td className="p-2.5 text-[#767D8C] dark:text-[#8B96AA] whitespace-nowrap">
                             {new Date(tx.date).toLocaleDateString()}
                           </td>
-                          <td className="p-2.5 font-medium text-slate-200">
+                          <td className="p-2.5 font-medium text-[#141722] dark:text-white">
                             {tx.description}
                           </td>
                           <td className="p-2.5">
-                            <span className="flex items-center gap-1.5 text-slate-300">
+                            <span className="flex items-center gap-1.5 text-[#525866] dark:text-[#94A0B8]">
                               <span
-                                className="w-2 h-2 rounded-full"
+                                className="w-2 h-2 rounded-full shrink-0"
                                 style={{ backgroundColor: tx.categoryColor }}
                               />
                               {tx.categoryName}
                             </span>
                           </td>
                           <td
-                            className={`p-2.5 text-right font-semibold ${
-                              tx.type === "INCOME" ? "text-emerald-400" : "text-rose-400"
+                            className={`p-2.5 text-right font-bold ${
+                              tx.type === "INCOME" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500"
                             }`}
                           >
                             {tx.type === "INCOME" ? "+" : "-"}${tx.amount.toFixed(2)}
@@ -551,10 +534,10 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end">
+            <div className="pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex justify-end">
               <button
                 onClick={() => setActivityModalUser(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition-colors"
+                className="px-4 py-2 rounded-2xl bg-[#181C28] hover:bg-[#252C3D] dark:bg-white dark:hover:bg-slate-100 text-white dark:text-[#181C28] text-xs font-bold transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -565,40 +548,40 @@ export default function AdminUsersPage() {
 
       {/* ── Modal: Password Reset Credentials ────────── */}
       {resetModalData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-amber-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl text-slate-100">
-            <div className="flex items-center gap-3 text-amber-400 mb-3">
-              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-[#161B27] border border-[#EFEAE1] dark:border-[#222938] rounded-3xl p-6 max-w-md w-full shadow-2xl text-[#141722] dark:text-white">
+            <div className="flex items-center gap-3 text-[#FF6422] dark:text-[#FF7D42] mb-3">
+              <div className="p-2.5 rounded-2xl bg-[#FFEFE6] dark:bg-[#FF6422]/20 border border-orange-200 dark:border-orange-500/20">
                 <KeyRound className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-base text-white">Password Reset Token Ready</h3>
-                <p className="text-xs text-slate-400">For user: {resetModalData.name}</p>
+                <h3 className="font-bold text-base text-[#141722] dark:text-white">Password Reset Token Ready</h3>
+                <p className="text-xs text-[#767D8C] dark:text-[#8B96AA]">For user: {resetModalData.name}</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+            <p className="text-xs text-[#525866] dark:text-[#94A0B8] mb-4 leading-relaxed">
               A secure password reset token has been registered in the database for{" "}
               <strong>{resetModalData.email}</strong>.
             </p>
 
             <div className="space-y-3 mb-4">
               <div>
-                <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">
-                  Reset Link URL
+                <label className="block text-[11px] font-medium text-[#767D8C] dark:text-[#8B96AA] mb-1">
+                  Reset link URL
                 </label>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="text"
                     readOnly
                     value={`${window.location.origin}${resetModalData.resetLink}`}
-                    className="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white font-mono"
+                    className="flex-1 px-3 py-2.5 rounded-2xl bg-[#FBF9F5] dark:bg-[#0E121B] border border-[#EFEAE1] dark:border-[#222938] text-xs text-[#141722] dark:text-white font-mono"
                   />
                   <button
                     onClick={() =>
                       copyToClipboard(`${window.location.origin}${resetModalData.resetLink}`)
                     }
-                    className="p-2 rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-600 transition-colors"
+                    className="p-2.5 rounded-2xl bg-[#FF6422] hover:bg-[#E55519] text-white font-bold transition-colors cursor-pointer"
                     title="Copy reset link"
                   >
                     {copiedLink ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -607,21 +590,21 @@ export default function AdminUsersPage() {
               </div>
 
               {resetModalData.tempPassword && (
-                <div className="p-3 rounded-2xl bg-amber-950/40 border border-amber-800/40">
-                  <span className="text-[10px] font-bold uppercase text-amber-400 block mb-0.5">
+                <div className="p-3.5 rounded-2xl bg-[#FFEFE6] dark:bg-[#FF6422]/10 border border-orange-200 dark:border-orange-500/20">
+                  <span className="text-[10px] font-bold uppercase text-[#FF6422] dark:text-[#FF7D42] block mb-0.5">
                     Temporary Immediate Password
                   </span>
-                  <code className="text-sm font-bold text-white">
+                  <code className="text-sm font-bold text-[#141722] dark:text-white">
                     {resetModalData.tempPassword}
                   </code>
                 </div>
               )}
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end">
+            <div className="pt-3 border-t border-[#EFEAE1] dark:border-[#222938] flex justify-end">
               <button
                 onClick={() => setResetModalData(null)}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 transition-colors"
+                className="px-4 py-2 rounded-2xl bg-[#FF6422] hover:bg-[#E55519] text-xs font-bold text-white shadow-sm transition-colors cursor-pointer"
               >
                 Done
               </button>

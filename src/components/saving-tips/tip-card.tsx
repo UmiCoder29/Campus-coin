@@ -5,14 +5,8 @@ import {
   Pin,
   X,
   RotateCcw,
-  Sparkles,
   TrendingDown,
-  Tag,
-  AlertTriangle,
-  Flame,
-  CheckCircle2,
 } from "lucide-react";
-import { CategoryIcon } from "@/components/ui/category-icon";
 
 export interface TipItem {
   id: string;
@@ -102,7 +96,7 @@ export function TipCard({ tip, onStatusChange, compact = false }: TipCardProps) 
             </span>
             {tip.targetCategory && (
               <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-                &bull; {tip.targetCategory}
+                | {tip.targetCategory}
               </span>
             )}
           </div>
@@ -165,12 +159,12 @@ export function TipCard({ tip, onStatusChange, compact = false }: TipCardProps) 
           <span className="capitalize">{tip.difficulty.toLowerCase()}</span>
           {isPinned && (
             <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5">
-              &bull; Pinned
+              | Pinned
             </span>
           )}
           {isDismissed && (
             <span className="text-slate-400 font-semibold flex items-center gap-0.5">
-              &bull; Dismissed
+              | Dismissed
             </span>
           )}
         </div>

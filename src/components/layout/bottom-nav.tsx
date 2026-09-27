@@ -44,14 +44,14 @@ export function BottomNav() {
               href={item.href}
               className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-[56px] ${
                 isActive
-                  ? "text-indigo-600 dark:text-indigo-400"
+                  ? "text-[#FF722B] dark:text-[#FF7D42]"
                   : "text-slate-400 dark:text-slate-500 active:text-slate-600"
               }`}
             >
               <div
                 className={`p-1 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-indigo-50 dark:bg-indigo-950/60 shadow-sm"
+                    ? "bg-[#FFEFE6] dark:bg-[#FF6422]/20 shadow-xs"
                     : ""
                 }`}
               >
@@ -59,7 +59,7 @@ export function BottomNav() {
               </div>
               <span
                 className={`text-[10px] font-semibold leading-tight ${
-                  isActive ? "text-indigo-600 dark:text-indigo-400" : ""
+                  isActive ? "text-[#FF722B] dark:text-[#FF7D42]" : ""
                 }`}
               >
                 {item.name}

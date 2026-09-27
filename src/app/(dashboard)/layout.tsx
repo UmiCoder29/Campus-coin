@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { CampusAiAssistant } from "@/components/ai/campus-ai-assistant";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,6 +28,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Bottom Nav (mobile only) */}
       <BottomNav />
+
+      {/* Hover-triggered AI Assistant Panel (slim right-edge tab) */}
+      <CampusAiAssistant />
     </div>
   );
 }

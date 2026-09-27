@@ -160,7 +160,7 @@ export function PreloaderCurtain({ onNavigate, waitForReady, onComplete }: Prelo
         );
       });
 
-      // 4. Tagline: "SAVE · TRACK · GROW" staggered fade & translate up
+      // 4. Tagline: "SAVE | TRACK | GROW" staggered fade & translate up
       if (tagWords && tagWords.length > 0) {
         tl.to(
           tagWords,
@@ -522,15 +522,15 @@ export function PreloaderCurtain({ onNavigate, waitForReady, onComplete }: Prelo
           </div>
         </div>
 
-        {/* ── Sub-Wordmark Tagline ("SAVE · TRACK · GROW") ──────────── */}
+        {/* ── Sub-Wordmark Tagline ("SAVE | TRACK | GROW") ──────────── */}
         <div
           ref={taglineRef}
           className="flex items-center justify-center gap-1.5 text-[8.5px] font-mono font-bold tracking-[0.24em] uppercase text-[#1a1a1a] mb-1"
         >
           <span className="tag-word">SAVE</span>
-          <span className="tag-word opacity-40">·</span>
+          <span className="tag-word opacity-40">|</span>
           <span className="tag-word">TRACK</span>
-          <span className="tag-word opacity-40">·</span>
+          <span className="tag-word opacity-40">|</span>
           <span className="tag-word">GROW</span>
         </div>
 
